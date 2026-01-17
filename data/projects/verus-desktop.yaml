@@ -1,0 +1,32 @@
+name: "Verus Desktop"
+slug: "verus-desktop"
+description: "Full-featured desktop wallet for the Verus ecosystem"
+longDescription: |
+  Verus Desktop is the official full-node wallet for the Verus Protocol. It provides a complete interface for managing your VRSC and other Verus currencies.
+
+  ## Features
+  
+  - Full node with complete blockchain verification
+  - VerusID management and authentication
+  - Multi-currency support
+  - Staking capabilities
+  - Cross-chain operations
+  
+  Built with Electron and React for a native desktop experience on Windows, macOS, and Linux.
+
+category: "wallet"
+repo: "https://github.com/VerusCoin/Verus-Desktop"
+liveUrl: "https://verus.io/wallet"
+docsUrl: "https://docs.verus.io"
+
+verusFeatures:
+  - VerusID
+  - Currencies
+  - DeFi
+  - Staking
+
+maintainer: "veruscoin"
+
+# screenshots:
+#   - dashboard.png
+#   - send-receive.png

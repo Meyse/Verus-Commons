@@ -1,0 +1,26 @@
+name: "Verus Bridge"
+slug: "verus-bridge"
+description: "Cross-chain bridge for moving assets between Verus and Ethereum"
+longDescription: |
+  The Verus Bridge enables trustless cross-chain transfers between the Verus Protocol and Ethereum networks.
+
+  ## Supported Operations
+  
+  - Transfer VRSC to Ethereum as wrapped tokens
+  - Bridge ERC-20 tokens to Verus
+  - Cross-chain currency conversions
+  
+  ## Architecture
+  
+  Uses notarization proofs and multi-signature validation for secure, decentralized bridging without requiring trusted intermediaries.
+
+category: "app"
+repo: "https://github.com/VerusCoin/verus-bridge"
+liveUrl: "https://bridge.verus.io"
+
+verusFeatures:
+  - Cross-chain
+  - Currencies
+  - DeFi
+
+maintainer: "veruscoin"
