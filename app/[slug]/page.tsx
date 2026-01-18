@@ -2,7 +2,8 @@
  * Project detail page
  * Shows full project info with markdown description and sidebar, theme-aware
  * 
- * Updated: Swapped button priorities - Repo is now primary (blue), Website is secondary.
+ * Updated: Added install command display with copy-to-clipboard for libraries,
+ * platform support badges, and enhanced sidebar for developer metadata.
  */
 
 import Link from 'next/link';
@@ -11,6 +12,7 @@ import Markdown from 'react-markdown';
 import { getAllProjects, getProjectBySlug } from '@/lib/projects';
 import { VerusFeatureTag } from '@/components/VerusFeatureTag';
 import { ScreenshotGallery } from '@/components/ScreenshotGallery';
+import { InstallCommand } from '@/components/InstallCommand';
 import { stringToColor, getInitials, timeAgo } from '@/lib/utils';
 
 export const revalidate = 3600;
@@ -31,6 +33,9 @@ export default async function ProjectPage({ params }: PageProps) {
   if (!project) {
     notFound();
   }
+
+  const isLibrary = project.category === 'library' || project.category === 'tool';
+  const primaryLang = project.primaryLanguage || project.github?.languages?.[0] || null;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
@@ -59,7 +64,15 @@ export default async function ProjectPage({ params }: PageProps) {
           )}
 
           <div className="flex-1">
-            <h1 className="text-2xl font-semibold text-[var(--color-text-primary)]">{project.name}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-semibold text-[var(--color-text-primary)]">{project.name}</h1>
+              {isLibrary && primaryLang && (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)] rounded border border-[var(--color-border)]">
+                  <LanguageDot language={primaryLang} />
+                  {primaryLang}
+                </span>
+              )}
+            </div>
             <p className="text-[var(--color-text-secondary)] text-sm mt-1">{project.description}</p>
             <div className="flex flex-wrap gap-1.5 mt-2">
               {project.verusFeatures.map((feature) => (
@@ -151,10 +164,43 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
       </div>
 
+      {/* Install Command for Libraries */}
+      {isLibrary && project.installCommand && (
+        <div className="mb-8">
+          <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
+            Quick Install
+          </h2>
+          <InstallCommand command={project.installCommand} />
+        </div>
+      )}
+
       {/* Stats - wrap on mobile */}
       {project.github && (
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[var(--color-text-secondary)] mb-8 pb-6 border-b border-[var(--color-border)]">
-          <span>★ {project.github.stars} stars</span>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[var(--color-text-secondary)] mb-8 pb-6 border-b border-[var(--color-border)]">
+          <span className="flex items-center gap-1">
+            <span>★</span> {project.github.stars} stars
+          </span>
+          <span className="flex items-center gap-1">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="14" 
+              height="14" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+              className="opacity-75"
+            >
+              <circle cx="12" cy="18" r="3" />
+              <circle cx="6" cy="6" r="3" />
+              <circle cx="18" cy="6" r="3" />
+              <path d="M6 9v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9" />
+              <path d="M12 12v3" />
+            </svg>
+            {project.github.forks} forks
+          </span>
           <span>Updated {timeAgo(project.github.lastCommit)}</span>
           {project.github.license && <span>{project.github.license}</span>}
         </div>
@@ -177,6 +223,26 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
 
         <aside className="space-y-6">
+          {/* Platform Support (for libraries) */}
+          {isLibrary && project.platformSupport && project.platformSupport.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
+                Platform Support
+              </h3>
+              <div className="flex flex-wrap gap-1">
+                {project.platformSupport.map((platform) => (
+                  <span
+                    key={platform}
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] rounded border border-[var(--color-border)]"
+                  >
+                    <PlatformIcon platform={platform} />
+                    {platform}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Languages */}
           {project.github && project.github.languages.length > 0 && (
             <div>
@@ -218,6 +284,16 @@ export default async function ProjectPage({ params }: PageProps) {
                   className="block text-[#3165D4]"
                 >
                   Website ↗
+                </a>
+              )}
+              {project.docsUrl && (
+                <a
+                  href={project.docsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-[#3165D4]"
+                >
+                  Documentation ↗
                 </a>
               )}
             </div>
@@ -262,4 +338,70 @@ export default async function ProjectPage({ params }: PageProps) {
       </div>
     </main>
   );
+}
+
+// Language color dot component
+function LanguageDot({ language }: { language: string }) {
+  const colors: Record<string, string> = {
+    TypeScript: '#3178c6',
+    JavaScript: '#f7df1e',
+    Python: '#3776ab',
+    Rust: '#dea584',
+    Go: '#00add8',
+    Java: '#b07219',
+    'C++': '#f34b7d',
+    C: '#555555',
+    Swift: '#fa7343',
+    Kotlin: '#a97bff',
+    Ruby: '#cc342d',
+    PHP: '#4f5d95',
+    Svelte: '#ff3e00',
+  };
+
+  const color = colors[language] || '#6b7280';
+
+  return (
+    <span 
+      className="w-2 h-2 rounded-full shrink-0"
+      style={{ backgroundColor: color }}
+    />
+  );
+}
+
+// Platform icon component
+function PlatformIcon({ platform }: { platform: string }) {
+  switch (platform) {
+    case 'web':
+      return (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+        </svg>
+      );
+    case 'node':
+      return (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+        </svg>
+      );
+    case 'desktop':
+      return (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      );
+    case 'mobile':
+      return (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      );
+    case 'cli':
+      return (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      );
+    default:
+      return null;
+  }
 }

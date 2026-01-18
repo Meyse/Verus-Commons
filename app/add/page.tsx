@@ -12,29 +12,43 @@ import { useState } from 'react';
 export default function AddPage() {
   const [copied, setCopied] = useState(false);
 
-  const yamlTemplate = `name: "Your Project Name"
-slug: "your-project-name"
-description: "Short one-liner describing your project"
+  const yamlTemplate = `# Required fields
+name: "Your Project Name"
+slug: "your-project-name" # Lowercase, hyphens only
+description: "Short one-liner describing your project (max 100 chars)"
 longDescription: |
   Full description here. Markdown is supported.
   
   Explain what your project does and how it uses Verus.
+  You can use headers, lists, links, etc.
 
+# Category options: wallet | app | dashboard | tool | library | other
 category: "app"
-repo: "https://github.com/username/repo"
-liveUrl: "https://yourapp.com"
 
+# GitHub repository URL (HTTPS)
+repo: "https://github.com/username/repo"
+
+# Features your project uses:
+# VerusID, Currencies, DeFi, Cross-chain, Zero-knowledge, 
+# Marketplace, Data, Blockchain, Staking, Mining
 verusFeatures:
   - VerusID
   - DeFi
 
-logo: "your-project-name.png"
+# Optional fields
+liveUrl: "https://yourapp.com"
+docsUrl: "https://docs.yourapp.com"
 
-screenshots:
-  - screenshot-1.png
-  - screenshot-2.png
+# Optional: Override GitHub owner if different
+# maintainer: "your-github-username"
 
-maintainer: "your-github-username"`;
+# Optional: Add logo in public/logos/
+# logo: "your-project-name.png"
+
+# Optional: Add screenshots in public/screenshots/your-project-slug/
+# screenshots:
+#   - screenshot-1.png
+#   - screenshot-2.png`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(yamlTemplate);

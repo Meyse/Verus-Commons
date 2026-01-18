@@ -21,5 +21,3 @@ repo: "https://github.com/VerusCoin/verusid-login"
 verusFeatures:
   - VerusID
   - Zero-knowledge
-
-maintainer: "veruscoin"

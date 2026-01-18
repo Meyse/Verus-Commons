@@ -1,13 +1,16 @@
 /**
  * Project data loading utilities
  * Reads YAML files from /data/projects/ and merges with GitHub data
+ * 
+ * Updated: Added getLibraryProjects() for developer resources section,
+ * supports new developer-focused fields (installCommand, primaryLanguage, etc.)
  */
 
 import fs from 'fs';
 import path from 'path';
 import { parse } from 'yaml';
 import { Project, ProjectYAML } from '@/types/project';
-import { fetchGitHubData } from './github';
+import { fetchGitHubData, parseGitHubUrl } from './github';
 
 const PROJECTS_DIR = path.join(process.cwd(), 'data', 'projects');
 const FEATURED_PATH = path.join(process.cwd(), 'data', 'featured.json');
@@ -25,7 +28,11 @@ export async function getAllProjects(): Promise<Project[]> {
       const content = fs.readFileSync(path.join(PROJECTS_DIR, file), 'utf-8');
       const yaml = parse(content) as ProjectYAML;
       const github = await fetchGitHubData(yaml.repo);
-      return { ...yaml, github } as Project;
+      
+      const parsedRepo = parseGitHubUrl(yaml.repo);
+      const maintainer = yaml.maintainer || parsedRepo?.owner || 'Unknown';
+
+      return { ...yaml, maintainer, github } as Project;
     })
   );
 
@@ -44,7 +51,10 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   const yaml = parse(content) as ProjectYAML;
   const github = await fetchGitHubData(yaml.repo);
   
-  return { ...yaml, github };
+  const parsedRepo = parseGitHubUrl(yaml.repo);
+  const maintainer = yaml.maintainer || parsedRepo?.owner || 'Unknown';
+  
+  return { ...yaml, maintainer, github };
 }
 
 /**
@@ -69,4 +79,21 @@ export async function getProjectsByMaintainer(name: string): Promise<Project[]> 
   return allProjects.filter(
     (p) => p.maintainer.toLowerCase() === name.toLowerCase()
   );
+}
+
+/**
+ * Get all library projects (category: library or tool)
+ * Sorted by those with install commands first, then by stars
+ */
+export async function getLibraryProjects(): Promise<Project[]> {
+  const allProjects = await getAllProjects();
+  return allProjects
+    .filter((p) => p.category === 'library' || p.category === 'tool')
+    .sort((a, b) => {
+      // Prioritize projects with install commands
+      if (a.installCommand && !b.installCommand) return -1;
+      if (!a.installCommand && b.installCommand) return 1;
+      // Then sort by stars
+      return (b.github?.stars || 0) - (a.github?.stars || 0);
+    });
 }

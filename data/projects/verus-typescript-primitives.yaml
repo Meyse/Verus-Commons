@@ -1,0 +1,70 @@
+# verus-typescript-primitives.yaml
+# TypeScript/JavaScript SDK for Verus blockchain data structures
+# Created: Developer library example with install command support
+
+name: "verus-typescript-primitives"
+slug: "verus-typescript-primitives"
+description: "TypeScript/JavaScript SDK for Verus blockchain data structures and RPC API"
+longDescription: |
+  `verus-typescript-primitives` is a comprehensive TypeScript library designed for interacting with the Verus blockchain. It provides a robust set of tools for serialization and deserialization of Verus's core data structures, enabling developers to build applications that can construct, parse, and manage Verus identities, currencies, transactions, and more.
+
+  ## Core Features
+
+  - **PBaaS Primitives**: Strong-typed classes for core Verus data structures like `Identity`, `CurrencyDefinition`, `ReserveTransfer`, and `TokenOutput`
+  - **VDXF Support**: Full implementation for creating, parsing, and verifying VDXF objects, including `VerusPayInvoice`, `LoginConsentRequest`, and `SignedSessionObject`
+  - **RPC API Wrappers**: Typed classes for Verus daemon RPC API calls (e.g., `getidentity`, `sendcurrency`, `getblock`)
+  - **Serialization & Deserialization**: Robust methods (`toBuffer`, `fromBuffer`) to convert complex objects into byte-level representations
+  - **Utility Functions**: Helper functions for address conversion (`toIAddress`), hashing, and Verus script compilation/decompilation
+
+  ## Installation
+
+  ```bash
+  yarn add verus-typescript-primitives
+  ```
+
+  ## Quick Start
+
+  ```typescript
+  import { VerusPayInvoice, VerusPayInvoiceDetails } from 'verus-typescript-primitives';
+  import { TransferDestination, DEST_PKH } from 'verus-typescript-primitives';
+  
+  // Create a VerusPay invoice
+  const details = new VerusPayInvoiceDetails({
+    amount: new BN('10000000000'), // 100 VRSC in satoshis
+    destination: new TransferDestination({
+      type: DEST_PKH,
+      destination_bytes: fromBase58Check("R9J8E2no2HVjQmzX6Ntes2ShSGcn7WiRcx").hash
+    }),
+    requestedcurrencyid: "iJhCezBExJHvtyH3fGhNnt2NhU4Ztkf2yq",
+  });
+  
+  const invoice = new VerusPayInvoice({ details });
+  const qrString = invoice.toQrString();
+  ```
+
+  ## Modules
+
+  - **`pbaas`**: Primitives for Verus Public-Blockchains-as-a-Service, including `Identity`, `CurrencyDefinition`, and transaction scripts
+  - **`vdxf`**: Verus Data Exchange Format objects for login confirmations and payments
+  - **`api`**: Classes mapping to the Verus RPC API with type-safe request/response handling
+  - **`utils`**: Helper functions for address conversions, cryptographic hashing, and script manipulation
+
+category: "library"
+repo: "https://github.com/VerusCoin/verus-typescript-primitives"
+docsUrl: "https://github.com/VerusCoin/verus-typescript-primitives#readme"
+
+verusFeatures:
+  - VerusID
+  - Currencies
+  - DeFi
+  - Data
+
+maintainer: "VerusCoin"
+
+# Developer-focused fields
+primaryLanguage: "TypeScript"
+packageManager: "npm"
+installCommand: "yarn add verus-typescript-primitives"
+platformSupport:
+  - web
+  - node

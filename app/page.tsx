@@ -1,19 +1,25 @@
 /**
  * Homepage
- * Compact hero, mobile-optimized layout with theme support
+ * Enhanced with Developer Resources section and improved layout
+ * 
+ * Updated: Added Developer Resources section for libraries/SDKs,
+ * Suspense boundaries for filter persistence, improved hero copy.
  */
 
+import { Suspense } from 'react';
 import Link from 'next/link';
-import { getAllProjects, getFeaturedProjects } from '@/lib/projects';
+import { getAllProjects, getFeaturedProjects, getLibraryProjects } from '@/lib/projects';
 import { FilterBar } from '@/components/FilterBar';
 import { FeaturedCard } from '@/components/FeaturedCard';
+import { DeveloperResources } from '@/components/DeveloperResources';
 
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const [projects, featured] = await Promise.all([
+  const [projects, featured, libraries] = await Promise.all([
     getAllProjects(),
     getFeaturedProjects(),
+    getLibraryProjects(),
   ]);
 
   return (
@@ -23,9 +29,12 @@ export default async function HomePage() {
         {/* Hero */}
         <section className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
           <div className="max-w-2xl">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-[var(--color-text-primary)] tracking-tight leading-tight">
-              Open source projects <span className="text-[var(--color-text-muted)]">built on Verus.</span>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-[var(--color-text-primary)] tracking-tight leading-tight mb-3">
+              The Verus Ecosystem
             </h1>
+            <p className="text-base sm:text-lg text-[var(--color-text-muted)] max-w-xl">
+              Explore open source projects built on Verus, and find the libraries and tools to build your own.
+            </p>
           </div>
           <div className="flex flex-row items-center gap-2 shrink-0">
             <Link
@@ -57,11 +66,37 @@ export default async function HomePage() {
           </section>
         )}
 
+        {/* Developer Resources Section */}
+        <DeveloperResources libraries={libraries} />
+
         {/* All Projects */}
         <section id="projects" className="max-w-4xl mx-auto">
-          <FilterBar projects={projects} />
+          <Suspense fallback={<FilterBarSkeleton />}>
+            <FilterBar projects={projects} />
+          </Suspense>
         </section>
       </div>
     </main>
+  );
+}
+
+// Skeleton for FilterBar during suspense
+function FilterBarSkeleton() {
+  return (
+    <div className="w-full animate-pulse">
+      <div className="h-12 sm:h-14 bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] mb-5" />
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-wrap gap-1.5">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-7 w-16 bg-[var(--color-surface)] rounded-md border border-[var(--color-border)]" />
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-7 w-20 bg-[var(--color-surface)] rounded-md border border-[var(--color-border)]" />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -8,7 +8,7 @@ import { GitHubData } from '@/types/project';
 /**
  * Extract owner and repo from a GitHub URL
  */
-function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
+export function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
   const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
   if (!match) return null;
   return { owner: match[1], repo: match[2].replace(/\.git$/, '') };
@@ -47,6 +47,7 @@ export async function fetchGitHubData(repoUrl: string): Promise<GitHubData | nul
 
     return {
       stars: repoData.stargazers_count || 0,
+      forks: repoData.forks_count || 0,
       lastCommit: commitsData[0]?.commit?.author?.date || repoData.pushed_at || '',
       license: repoData.license?.spdx_id || null,
       languages: Object.keys(languagesData),
