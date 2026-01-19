@@ -2,59 +2,14 @@
  * Add Project page
  * Instructions for submitting a project via pull request, theme-aware
  * 
- * Updated: Improved instructions, added copy button for YAML template, clearer file placement guide
+ * Updated: Now references the _template.yaml file directly in the repo
  */
 
 'use client';
 
-import { useState } from 'react';
-
 export default function AddPage() {
-  const [copied, setCopied] = useState(false);
-
-  const yamlTemplate = `# Required fields
-name: "Your Project Name"
-slug: "your-project-name" # Lowercase, hyphens only
-description: "Short one-liner describing your project (max 100 chars)"
-longDescription: |
-  Full description here. Markdown is supported.
-  
-  Explain what your project does and how it uses Verus.
-  You can use headers, lists, links, etc.
-
-# Category options: wallet | app | dashboard | tool | library | other
-category: "app"
-
-# GitHub repository URL (HTTPS)
-repo: "https://github.com/username/repo"
-
-# Features your project uses:
-# VerusID, Currencies, DeFi, Cross-chain, Zero-knowledge, 
-# Marketplace, Data, Blockchain, Staking, Mining
-verusFeatures:
-  - VerusID
-  - DeFi
-
-# Optional fields
-liveUrl: "https://yourapp.com"
-docsUrl: "https://docs.yourapp.com"
-
-# Optional: Override GitHub owner if different
-# maintainer: "your-github-username"
-
-# Optional: Add logo in public/logos/
-# logo: "your-project-name.png"
-
-# Optional: Add screenshots in public/screenshots/your-project-slug/
-# screenshots:
-#   - screenshot-1.png
-#   - screenshot-2.png`;
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(yamlTemplate);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const templateUrl = 'https://github.com/veruscoin/commons/blob/main/data/projects/_template.yaml';
+  const rawTemplateUrl = 'https://raw.githubusercontent.com/veruscoin/commons/main/data/projects/_template.yaml';
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-12">
@@ -138,20 +93,37 @@ docsUrl: "https://docs.yourapp.com"
 
         {/* Template */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
-              YAML Template
-            </h2>
-            <button
-              onClick={handleCopy}
-              className="px-2.5 py-1 text-xs font-medium bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] rounded border border-[var(--color-border)] hover:border-[var(--color-border-strong)] transition-colors"
-            >
-              {copied ? 'Copied!' : 'Copy'}
-            </button>
+          <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-4">
+            YAML Template
+          </h2>
+          <div className="bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg p-4">
+            <p className="text-sm text-[var(--color-text-secondary)] mb-4">
+              Use our template file as a starting point. Copy it, rename it to your project slug, and fill in the details.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <a
+                href={templateUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-[#3165D4] text-white rounded-lg hover:bg-[#2855b8] transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                View Template on GitHub
+              </a>
+              <a
+                href={rawTemplateUrl}
+                download="_template.yaml"
+                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-[var(--color-surface)] text-[var(--color-text-secondary)] rounded-lg border border-[var(--color-border)] hover:border-[var(--color-border-strong)] transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download Template
+              </a>
+            </div>
           </div>
-          <pre className="bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg p-4 text-sm text-[var(--color-text-secondary)] overflow-x-auto">
-            <code>{yamlTemplate}</code>
-          </pre>
         </section>
 
         {/* Field Reference */}
@@ -194,11 +166,11 @@ docsUrl: "https://docs.yourapp.com"
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">logo</code>
-              <span className="text-[var(--color-text-muted)]">Filename only, placed in public/logos/ (optional)</span>
+              <span className="text-[var(--color-text-muted)]">128×128 PNG in public/logos/ (optional)</span>
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">screenshots</code>
-              <span className="text-[var(--color-text-muted)]">List of filenames in public/screenshots/your-slug/ (optional)</span>
+              <span className="text-[var(--color-text-muted)]">Max 6 PNG/JPG in public/screenshots/your-slug/ (optional)</span>
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">maintainer</code>
@@ -221,10 +193,10 @@ docsUrl: "https://docs.yourapp.com"
               'Currencies',
               'DeFi',
               'Cross-chain',
-              'Zero-knowledge',
+              'Zero-knowledge privacy',
               'Marketplace',
               'Data',
-              'Blockchain',
+              'PBaaS-chain',
               'Staking',
               'Mining',
             ].map((f) => (
@@ -249,15 +221,32 @@ docsUrl: "https://docs.yourapp.com"
               <span className="text-[var(--color-text-muted)]">•</span>
               <span>Must integrate with Verus Protocol in some way</span>
             </li>
-            <li className="flex gap-2">
-              <span className="text-[var(--color-text-muted)]">•</span>
-              <span>Logo should be 256×256 PNG with a solid background (no transparency)</span>
-            </li>
-            <li className="flex gap-2">
-              <span className="text-[var(--color-text-muted)]">•</span>
-              <span>Screenshots should be high-quality PNG or JPG images</span>
-            </li>
           </ul>
+        </section>
+
+        {/* Asset Guidelines */}
+        <section>
+          <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-4">
+            Asset Guidelines
+          </h2>
+          <div className="space-y-4 text-sm">
+            <div>
+              <h3 className="text-[var(--color-text-primary)] font-medium mb-2">Logo</h3>
+              <ul className="space-y-1 text-[var(--color-text-muted)]">
+                <li>• 128×128 pixels</li>
+                <li>• PNG format</li>
+                <li>• Solid background (no transparency)</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-[var(--color-text-primary)] font-medium mb-2">Screenshots</h3>
+              <ul className="space-y-1 text-[var(--color-text-muted)]">
+                <li>• Maximum 6 images</li>
+                <li>• PNG or JPG format</li>
+                <li>• Max 1MB per image</li>
+              </ul>
+            </div>
+          </div>
         </section>
       </div>
     </main>

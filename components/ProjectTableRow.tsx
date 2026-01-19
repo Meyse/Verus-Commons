@@ -1,32 +1,20 @@
 /**
  * ProjectTableRow component
  * Compact table row for developer-focused list view
- * Shows language, install command, stats in a scannable format
+ * Shows language, stats in a scannable format
  * 
- * Created: Table view for library/tool discovery with copy-to-clipboard
+ * Updated: Uses Next.js Image for optimized logo loading
  */
 
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Project } from '@/types/project';
 import { stringToColor, getInitials, timeAgo } from '@/lib/utils';
 
 export function ProjectTableRow({ project }: { project: Project }) {
-  const [copied, setCopied] = useState(false);
-
-  const primaryLang = project.primaryLanguage || project.github?.languages?.[0] || null;
-  
-  const copyInstallCommand = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (project.installCommand) {
-      await navigator.clipboard.writeText(project.installCommand);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  const primaryLang = project.github?.languages?.[0] || null;
 
   return (
     <tr className="border-b border-[var(--color-border)] hover:bg-[var(--color-surface-elevated)] transition-colors">
@@ -37,9 +25,11 @@ export function ProjectTableRow({ project }: { project: Project }) {
             {/* Logo / Icon */}
             <div className="shrink-0">
               {project.logo ? (
-                <img
+                <Image
                   src={`/logos/${project.logo}`}
                   alt={project.name}
+                  width={64}
+                  height={64}
                   className="w-8 h-8 rounded-md object-cover bg-[var(--color-surface-elevated)] border border-[var(--color-border)]"
                 />
               ) : (
@@ -70,32 +60,6 @@ export function ProjectTableRow({ project }: { project: Project }) {
             <LanguageIcon language={primaryLang} />
             {primaryLang}
           </span>
-        )}
-      </td>
-
-      {/* Install Command */}
-      <td className="py-3 px-3 hidden md:table-cell">
-        {project.installCommand ? (
-          <button
-            onClick={copyInstallCommand}
-            className="group inline-flex items-center gap-2 px-2 py-1 text-xs font-mono bg-[var(--color-surface)] text-[var(--color-text-secondary)] rounded border border-[var(--color-border)] hover:border-[var(--color-border-strong)] transition-colors max-w-[200px]"
-            title="Click to copy"
-          >
-            <span className="truncate">{project.installCommand}</span>
-            <span className="shrink-0 text-[var(--color-text-muted)] group-hover:text-[var(--color-text-secondary)]">
-              {copied ? (
-                <svg className="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-              )}
-            </span>
-          </button>
-        ) : (
-          <span className="text-xs text-[var(--color-text-muted)]">—</span>
         )}
       </td>
 

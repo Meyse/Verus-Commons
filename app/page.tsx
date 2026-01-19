@@ -1,9 +1,9 @@
 /**
  * Homepage
- * Enhanced with Developer Resources section and improved layout
+ * Two-tier search: prominent global search with overlay, smaller inline filter
  * 
- * Updated: Added Developer Resources section for libraries/SDKs,
- * Suspense boundaries for filter persistence, improved hero copy.
+ * Updated: Added GlobalSearch component above featured section with instant
+ * overlay results. FilterBar now has smaller, less prominent search input.
  */
 
 import { Suspense } from 'react';
@@ -12,6 +12,7 @@ import { getAllProjects, getFeaturedProjects, getLibraryProjects } from '@/lib/p
 import { FilterBar } from '@/components/FilterBar';
 import { FeaturedCard } from '@/components/FeaturedCard';
 import { DeveloperResources } from '@/components/DeveloperResources';
+import { GlobalSearch } from '@/components/GlobalSearch';
 
 export const revalidate = 3600;
 
@@ -27,7 +28,7 @@ export default async function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 lg:py-16">
         
         {/* Hero */}
-        <section className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
+        <section className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">
           <div className="max-w-2xl">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-[var(--color-text-primary)] tracking-tight leading-tight mb-3">
               The Verus Ecosystem
@@ -52,6 +53,11 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* Global Search */}
+        <section className="mb-10 sm:mb-14 lg:mb-16">
+          <GlobalSearch projects={projects} />
+        </section>
+
         {/* Featured Section */}
         {featured.length > 0 && (
           <section className="mb-10 sm:mb-16 lg:mb-20">
@@ -71,6 +77,9 @@ export default async function HomePage() {
 
         {/* All Projects */}
         <section id="projects" className="max-w-4xl mx-auto">
+          <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wider mb-4 sm:mb-6">
+            All Projects
+          </h2>
           <Suspense fallback={<FilterBarSkeleton />}>
             <FilterBar projects={projects} />
           </Suspense>
@@ -84,18 +93,13 @@ export default async function HomePage() {
 function FilterBarSkeleton() {
   return (
     <div className="w-full animate-pulse">
-      <div className="h-12 sm:h-14 bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] mb-5" />
-      <div className="flex flex-col gap-5">
-        <div className="flex flex-wrap gap-1.5">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-7 w-16 bg-[var(--color-surface)] rounded-md border border-[var(--color-border)]" />
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-7 w-20 bg-[var(--color-surface)] rounded-md border border-[var(--color-border)]" />
-          ))}
-        </div>
+      <div className="h-9 w-64 max-w-sm bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)] mb-4" />
+      <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="border-b border-[var(--color-border)] last:border-b-0 px-3 py-2.5">
+            <div className="h-4 w-20 bg-[var(--color-surface-elevated)] rounded" />
+          </div>
+        ))}
       </div>
     </div>
   );

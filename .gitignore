@@ -39,6 +39,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# generated screenshot dimensions (created by prebuild script)
+/public/screenshots/dimensions.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

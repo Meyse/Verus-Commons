@@ -1,34 +1,19 @@
 /**
  * ProjectCard component
- * Compact horizontal list item with library-specific enhancements
- * Shows install command and primary language for libraries
+ * Compact horizontal list item with language badge for libraries
  * 
- * Updated: Added copy-to-clipboard for install commands, language badge,
- * and category-specific visual treatments for libraries/tools.
+ * Updated: Uses Next.js Image for optimized logo loading
  */
 
-'use client';
-
-import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Project } from '@/types/project';
 import { VerusFeatureTag } from './VerusFeatureTag';
 import { stringToColor, getInitials, timeAgo } from '@/lib/utils';
 
 export function ProjectCard({ project }: { project: Project }) {
-  const [copied, setCopied] = useState(false);
   const isLibrary = project.category === 'library' || project.category === 'tool';
-  const primaryLang = project.primaryLanguage || project.github?.languages?.[0] || null;
-
-  const copyInstallCommand = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (project.installCommand) {
-      await navigator.clipboard.writeText(project.installCommand);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  const primaryLang = project.github?.languages?.[0] || null;
 
   return (
     <Link
@@ -39,9 +24,11 @@ export function ProjectCard({ project }: { project: Project }) {
         {/* Logo / Icon */}
         <div className="shrink-0">
           {project.logo ? (
-            <img
+            <Image
               src={`/logos/${project.logo}`}
               alt={project.name}
+              width={96}
+              height={96}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl object-cover bg-[var(--color-surface-elevated)] border border-[var(--color-border)]"
             />
           ) : (
@@ -80,31 +67,6 @@ export function ProjectCard({ project }: { project: Project }) {
           <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed mb-3 line-clamp-2">
             {project.description}
           </p>
-
-          {/* Install command for libraries */}
-          {isLibrary && project.installCommand && (
-            <div className="mb-3">
-              <button
-                onClick={copyInstallCommand}
-                className="inline-flex items-center gap-2 px-2.5 py-1.5 text-xs font-mono bg-[var(--color-background)] text-[var(--color-text-secondary)] rounded-md border border-[var(--color-border)] hover:border-[var(--color-border-strong)] transition-colors"
-                title="Click to copy"
-              >
-                <span className="text-[var(--color-text-muted)]">$</span>
-                <span className="truncate max-w-[200px] sm:max-w-[300px]">{project.installCommand}</span>
-                <span className="shrink-0 ml-1">
-                  {copied ? (
-                    <svg className="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    <svg className="w-3.5 h-3.5 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  )}
-                </span>
-              </button>
-            </div>
-          )}
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-wrap gap-1.5">

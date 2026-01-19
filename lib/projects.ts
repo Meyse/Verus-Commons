@@ -2,8 +2,8 @@
  * Project data loading utilities
  * Reads YAML files from /data/projects/ and merges with GitHub data
  * 
- * Updated: Added getLibraryProjects() for developer resources section,
- * supports new developer-focused fields (installCommand, primaryLanguage, etc.)
+ * Updated: Featured projects now auto-selected from eligible categories
+ * (app, wallet, dashboard) with featured images, rotated daily via date-seeded shuffle
  */
 
 import fs from 'fs';
@@ -13,7 +13,10 @@ import { Project, ProjectYAML } from '@/types/project';
 import { fetchGitHubData, parseGitHubUrl } from './github';
 
 const PROJECTS_DIR = path.join(process.cwd(), 'data', 'projects');
-const FEATURED_PATH = path.join(process.cwd(), 'data', 'featured.json');
+const SCREENSHOTS_DIR = path.join(process.cwd(), 'public', 'screenshots');
+
+/** Categories eligible for featured section */
+const FEATURED_ELIGIBLE_CATEGORIES = ['app', 'wallet', 'dashboard'];
 
 /**
  * Get all projects with GitHub data merged in
@@ -21,7 +24,8 @@ const FEATURED_PATH = path.join(process.cwd(), 'data', 'featured.json');
 export async function getAllProjects(): Promise<Project[]> {
   if (!fs.existsSync(PROJECTS_DIR)) return [];
 
-  const files = fs.readdirSync(PROJECTS_DIR).filter((f) => f.endsWith('.yaml'));
+  // Exclude template file (starts with underscore)
+  const files = fs.readdirSync(PROJECTS_DIR).filter((f) => f.endsWith('.yaml') && !f.startsWith('_'));
   
   const projects = await Promise.all(
     files.map(async (file) => {
@@ -58,17 +62,100 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
 }
 
 /**
- * Get featured projects (defined in featured.json)
+ * Check if a project has a featured image
+ */
+function hasFeaturedImage(slug: string): boolean {
+  const projectScreenshotsDir = path.join(SCREENSHOTS_DIR, slug);
+  if (!fs.existsSync(projectScreenshotsDir)) return false;
+  
+  return (
+    fs.existsSync(path.join(projectScreenshotsDir, 'featured.png')) ||
+    fs.existsSync(path.join(projectScreenshotsDir, 'featured.jpg'))
+  );
+}
+
+/**
+ * Get the featured image filename for a project
+ */
+export function getFeaturedImage(slug: string): string | null {
+  const projectScreenshotsDir = path.join(SCREENSHOTS_DIR, slug);
+  if (!fs.existsSync(projectScreenshotsDir)) return null;
+  
+  if (fs.existsSync(path.join(projectScreenshotsDir, 'featured.png'))) {
+    return 'featured.png';
+  }
+  if (fs.existsSync(path.join(projectScreenshotsDir, 'featured.jpg'))) {
+    return 'featured.jpg';
+  }
+  return null;
+}
+
+/**
+ * Seeded random number generator (mulberry32)
+ * Returns a function that generates deterministic random numbers from 0-1
+ */
+function seededRandom(seed: number): () => number {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Shuffle array using seeded random (Fisher-Yates)
+ */
+function seededShuffle<T>(array: T[], seed: number): T[] {
+  const result = [...array];
+  const random = seededRandom(seed);
+  
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  
+  return result;
+}
+
+/**
+ * Get date-based seed for daily rotation (UTC)
+ */
+function getDailySeed(): number {
+  const now = new Date();
+  const dateString = `${now.getUTCFullYear()}-${now.getUTCMonth()}-${now.getUTCDate()}`;
+  // Simple hash of date string
+  let hash = 0;
+  for (let i = 0; i < dateString.length; i++) {
+    const char = dateString.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Get featured projects
+ * - Filters to eligible categories (app, wallet, dashboard)
+ * - Requires featured image in screenshots folder
+ * - Returns 3 projects, shuffled daily using date-seeded randomization
  */
 export async function getFeaturedProjects(): Promise<Project[]> {
-  if (!fs.existsSync(FEATURED_PATH)) return [];
-
-  const featuredSlugs = JSON.parse(fs.readFileSync(FEATURED_PATH, 'utf-8')) as string[];
   const allProjects = await getAllProjects();
   
-  return featuredSlugs
-    .map((slug) => allProjects.find((p) => p.slug === slug))
-    .filter((p): p is Project => p !== undefined);
+  // Filter to eligible projects
+  const eligible = allProjects.filter((project) => 
+    FEATURED_ELIGIBLE_CATEGORIES.includes(project.category) &&
+    hasFeaturedImage(project.slug)
+  );
+  
+  if (eligible.length === 0) return [];
+  
+  // Shuffle with daily seed and take top 3
+  const seed = getDailySeed();
+  const shuffled = seededShuffle(eligible, seed);
+  
+  return shuffled.slice(0, 3);
 }
 
 /**
@@ -83,17 +170,11 @@ export async function getProjectsByMaintainer(name: string): Promise<Project[]> 
 
 /**
  * Get all library projects (category: library or tool)
- * Sorted by those with install commands first, then by stars
+ * Sorted by stars
  */
 export async function getLibraryProjects(): Promise<Project[]> {
   const allProjects = await getAllProjects();
   return allProjects
     .filter((p) => p.category === 'library' || p.category === 'tool')
-    .sort((a, b) => {
-      // Prioritize projects with install commands
-      if (a.installCommand && !b.installCommand) return -1;
-      if (!a.installCommand && b.installCommand) return 1;
-      // Then sort by stars
-      return (b.github?.stars || 0) - (a.github?.stars || 0);
-    });
+    .sort((a, b) => (b.github?.stars || 0) - (a.github?.stars || 0));
 }

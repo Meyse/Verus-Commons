@@ -1,0 +1,100 @@
+# _template.yaml
+# Copy this file and rename it to your-project-slug.yaml
+# Fill in all required fields and remove comments before submitting
+
+# ============================================================================
+# REQUIRED FIELDS
+# ============================================================================
+
+# Display name of your project
+name: "Your Project Name"
+
+# URL-friendly identifier (lowercase, hyphens only, must match filename)
+slug: "your-project-slug"
+
+# Short one-liner describing your project (max 100 characters)
+description: "A brief description of what your project does"
+
+# Full description with Markdown support
+# Use this to explain features, usage, and how your project integrates with Verus
+longDescription: |
+  A more detailed description of your project goes here.
+  
+  ## Features
+  
+  - Feature one
+  - Feature two
+  - Feature three
+  
+  ## How it works
+  
+  Explain how your project uses Verus Protocol features.
+  You can use any Markdown formatting here.
+
+# Project category - choose ONE:
+# wallet | app | dashboard | tool | library | other
+category: "app"
+
+# GitHub repository URL (HTTPS format)
+repo: "https://github.com/your-username/your-repo"
+
+# Verus features your project uses - select all that apply:
+# VerusID, Currencies, DeFi, Cross-chain, Zero-knowledge privacy,
+# Marketplace, Data, PBaaS-chain, Staking, Mining
+verusFeatures:
+  - VerusID
+
+# ============================================================================
+# OPTIONAL FIELDS
+# ============================================================================
+
+# Live website URL (if your project is deployed)
+# liveUrl: "https://your-project.com"
+
+# Documentation URL (if different from repo README)
+# docsUrl: "https://docs.your-project.com"
+
+# GitHub username/organization (defaults to repo owner if not specified)
+# maintainer: "your-github-username"
+
+# ============================================================================
+# ASSETS (Optional)
+# ============================================================================
+
+# Logo - place in public/logos/
+#   - 128x128 pixels
+#   - PNG format
+#   - Solid background (no transparency)
+# logo: "your-project-slug.png"
+
+# Screenshots - place in public/screenshots/your-project-slug/
+#   - Maximum 6 images
+#   - PNG or JPG format
+#   - Max 1MB per image
+# screenshots:
+#   - screen1.png
+#   - screen2.png
+#   - screen3.png
+
+# ============================================================================
+# FEATURED SECTION (Apps, Wallets, and Dashboards only)
+# ============================================================================
+#
+# Want your project to appear in the Featured section on the homepage?
+# 
+# Requirements:
+#   1. Your project must be category: "app", "wallet", or "dashboard"
+#   2. Add a featured image to: public/screenshots/your-project-slug/featured.png
+#      (or featured.jpg)
+#
+# Featured Image Specifications:
+#   - Dimensions: 1200 x 400 pixels (3:1 aspect ratio)
+#   - Format: PNG or JPG
+#   - Max size: 500KB
+#   - Content: A compelling banner showcasing your app's UI or key feature
+#   - Tip: Make sure text/UI elements are readable at smaller sizes
+#
+# How it works:
+#   - Eligible projects are randomly selected and rotated daily (UTC)
+#   - 3 featured projects are shown at a time
+#   - All eligible projects get equal opportunity to be featured

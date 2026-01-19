@@ -2,17 +2,19 @@
  * Project detail page
  * Shows full project info with markdown description and sidebar, theme-aware
  * 
- * Updated: Added install command display with copy-to-clipboard for libraries,
- * platform support badges, and enhanced sidebar for developer metadata.
+ * Updated: Added build-time screenshot dimension extraction to eliminate
+ * client-side double-loading of images. Dimensions are passed to gallery
+ * from server component, with fallback to client-side detection in dev.
  */
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Markdown from 'react-markdown';
 import { getAllProjects, getProjectBySlug } from '@/lib/projects';
+import { getScreenshotDimensions } from '@/lib/screenshots';
 import { VerusFeatureTag } from '@/components/VerusFeatureTag';
 import { ScreenshotGallery } from '@/components/ScreenshotGallery';
-import { InstallCommand } from '@/components/InstallCommand';
 import { stringToColor, getInitials, timeAgo } from '@/lib/utils';
 
 export const revalidate = 3600;
@@ -35,7 +37,7 @@ export default async function ProjectPage({ params }: PageProps) {
   }
 
   const isLibrary = project.category === 'library' || project.category === 'tool';
-  const primaryLang = project.primaryLanguage || project.github?.languages?.[0] || null;
+  const primaryLang = project.github?.languages?.[0] || null;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
@@ -49,9 +51,11 @@ export default async function ProjectPage({ params }: PageProps) {
         {/* Desktop layout */}
         <div className="hidden md:flex md:items-start md:gap-4">
           {project.logo ? (
-            <img
+            <Image
               src={`/logos/${project.logo}`}
               alt={project.name}
+              width={128}
+              height={128}
               className="w-16 h-16 rounded-xl object-cover"
             />
           ) : (
@@ -107,9 +111,11 @@ export default async function ProjectPage({ params }: PageProps) {
         <div className="md:hidden">
           <div className="flex items-center gap-3 mb-3">
             {project.logo ? (
-              <img
+              <Image
                 src={`/logos/${project.logo}`}
                 alt={project.name}
+                width={96}
+                height={96}
                 className="w-12 h-12 rounded-xl object-cover shrink-0"
               />
             ) : (
@@ -164,16 +170,6 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Install Command for Libraries */}
-      {isLibrary && project.installCommand && (
-        <div className="mb-8">
-          <h2 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-            Quick Install
-          </h2>
-          <InstallCommand command={project.installCommand} />
-        </div>
-      )}
-
       {/* Stats - wrap on mobile */}
       {project.github && (
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[var(--color-text-secondary)] mb-8 pb-6 border-b border-[var(--color-border)]">
@@ -208,7 +204,11 @@ export default async function ProjectPage({ params }: PageProps) {
 
       {/* Screenshots */}
       {project.screenshots && project.screenshots.length > 0 && (
-        <ScreenshotGallery screenshots={project.screenshots} projectSlug={project.slug} />
+        <ScreenshotGallery 
+          screenshots={project.screenshots} 
+          projectSlug={project.slug}
+          preloadedDimensions={getScreenshotDimensions(project.slug, project.screenshots)}
+        />
       )}
 
       {/* Content */}
@@ -223,26 +223,6 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
 
         <aside className="space-y-6">
-          {/* Platform Support (for libraries) */}
-          {isLibrary && project.platformSupport && project.platformSupport.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-                Platform Support
-              </h3>
-              <div className="flex flex-wrap gap-1">
-                {project.platformSupport.map((platform) => (
-                  <span
-                    key={platform}
-                    className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] rounded border border-[var(--color-border)]"
-                  >
-                    <PlatformIcon platform={platform} />
-                    {platform}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Languages */}
           {project.github && project.github.languages.length > 0 && (
             <div>
@@ -366,42 +346,4 @@ function LanguageDot({ language }: { language: string }) {
       style={{ backgroundColor: color }}
     />
   );
-}
-
-// Platform icon component
-function PlatformIcon({ platform }: { platform: string }) {
-  switch (platform) {
-    case 'web':
-      return (
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-        </svg>
-      );
-    case 'node':
-      return (
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
-        </svg>
-      );
-    case 'desktop':
-      return (
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      );
-    case 'mobile':
-      return (
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-        </svg>
-      );
-    case 'cli':
-      return (
-        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      );
-    default:
-      return null;
-  }
 }

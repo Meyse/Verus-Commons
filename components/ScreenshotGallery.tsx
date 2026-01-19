@@ -8,6 +8,11 @@
  * - Single image: centered with max-width
  * 
  * Includes lightbox for full-size viewing
+ * 
+ * Updated: 
+ * - Uses build-time dimension extraction when available (eliminates double-loading)
+ * - Optimized sizes prop for each layout to serve appropriately sized images
+ *   (landscape thumbnails: 500px, portrait grid: 25vw, single: context-aware)
  */
 
 'use client';
@@ -22,18 +27,40 @@ interface ImageData {
   isLandscape: boolean;
 }
 
+/** Pre-extracted dimensions from build-time script */
+interface PreloadedImageData {
+  filename: string;
+  src: string;
+  width: number;
+  height: number;
+  isLandscape: boolean;
+}
+
 interface ScreenshotGalleryProps {
   screenshots: string[];
   projectSlug: string;
+  /** Pre-extracted dimensions from server (null triggers client-side fallback) */
+  preloadedDimensions?: PreloadedImageData[] | null;
 }
 
-export function ScreenshotGallery({ screenshots, projectSlug }: ScreenshotGalleryProps) {
-  const [images, setImages] = useState<ImageData[]>([]);
+export function ScreenshotGallery({ 
+  screenshots, 
+  projectSlug,
+  preloadedDimensions 
+}: ScreenshotGalleryProps) {
+  // Use preloaded dimensions if available (server-rendered, no loading state)
+  const hasPreloadedDimensions = preloadedDimensions && preloadedDimensions.length > 0;
+  
+  const [images, setImages] = useState<ImageData[]>(
+    hasPreloadedDimensions ? preloadedDimensions : []
+  );
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!hasPreloadedDimensions);
 
-  // Load image dimensions
+  // Client-side dimension detection (fallback for development or missing dimensions)
   useEffect(() => {
+    // Skip if we have preloaded dimensions
+    if (hasPreloadedDimensions) return;
     if (screenshots.length === 0) return;
 
     const loadImages = async () => {
@@ -68,7 +95,7 @@ export function ScreenshotGallery({ screenshots, projectSlug }: ScreenshotGaller
     };
 
     loadImages();
-  }, [screenshots, projectSlug]);
+  }, [screenshots, projectSlug, hasPreloadedDimensions]);
 
   // Keyboard navigation for lightbox
   useEffect(() => {
@@ -141,11 +168,16 @@ export function ScreenshotGallery({ screenshots, projectSlug }: ScreenshotGaller
                 width={images[0].width}
                 height={images[0].height}
                 className="w-full h-auto"
+                priority
+                sizes={images[0].isLandscape 
+                  ? "(max-width: 768px) 100vw, 800px" 
+                  : "300px"
+                }
               />
             </button>
           </div>
         ) : isLandscapeLayout ? (
-          // Landscape: horizontal scroll
+          // Landscape: horizontal scroll (280px height, ~400-500px width)
           <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin">
             {images.map((image, index) => (
               <button
@@ -162,6 +194,8 @@ export function ScreenshotGallery({ screenshots, projectSlug }: ScreenshotGaller
                   alt={`Screenshot ${index + 1}`}
                   fill
                   className="object-cover"
+                  priority={index === 0}
+                  sizes="500px"
                 />
               </button>
             ))}
@@ -180,6 +214,8 @@ export function ScreenshotGallery({ screenshots, projectSlug }: ScreenshotGaller
                   alt={`Screenshot ${index + 1}`}
                   fill
                   className="object-cover"
+                  priority={index < 4}
+                  sizes="(max-width: 640px) 50vw, 25vw"
                 />
               </button>
             ))}
@@ -239,6 +275,8 @@ export function ScreenshotGallery({ screenshots, projectSlug }: ScreenshotGaller
               width={images[lightboxIndex].width}
               height={images[lightboxIndex].height}
               className="max-w-full max-h-[90vh] w-auto h-auto object-contain"
+              priority
+              sizes="90vw"
             />
           </div>
 

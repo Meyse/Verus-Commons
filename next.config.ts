@@ -1,3 +1,6 @@
+/**
+ * Next.js Configuration
+ */
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {

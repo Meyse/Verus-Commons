@@ -2,9 +2,8 @@
  * Type definitions for the Commons project registry
  * Defines Project, GitHubData, and related interfaces
  * 
- * Updated: Added developer-focused fields for libraries (primaryLanguage, 
- * installCommand, packageManager, platformSupport). Enhanced support for
- * SDK/library discovery.
+ * Updated: Simplified schema - removed developer-focused fields (primaryLanguage,
+ * installCommand, etc.) as GitHub repos contain this information directly.
  */
 
 export const VERUS_FEATURES = [
@@ -12,10 +11,10 @@ export const VERUS_FEATURES = [
   'Currencies',
   'DeFi',
   'Cross-chain',
-  'Zero-knowledge',
+  'Zero-knowledge privacy',
   'Marketplace',
   'Data',
-  'Blockchain',
+  'PBaaS-chain',
   'Staking',
   'Mining',
 ] as const;
@@ -32,12 +31,6 @@ export const CATEGORIES = [
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
-
-export const PACKAGE_MANAGERS = ['npm', 'yarn', 'cargo', 'pip', 'go', 'other'] as const;
-export type PackageManager = (typeof PACKAGE_MANAGERS)[number];
-
-export const PLATFORMS = ['web', 'node', 'desktop', 'mobile', 'cli'] as const;
-export type Platform = (typeof PLATFORMS)[number];
 
 export interface GitHubData {
   stars: number;
@@ -60,12 +53,6 @@ export interface ProjectYAML {
   docsUrl?: string;
   logo?: string;
   screenshots?: string[];
-  
-  // Developer-focused fields (primarily for libraries/tools)
-  primaryLanguage?: string;
-  packageManager?: PackageManager;
-  installCommand?: string;
-  platformSupport?: Platform[];
 }
 
 export interface Project extends ProjectYAML {

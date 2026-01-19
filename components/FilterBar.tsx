@@ -1,10 +1,8 @@
 /**
  * FilterBar component
- * Enhanced filtering with language support, view mode toggle, and URL persistence
+ * Compact filtering with collapsible sections, language support, and URL persistence
  * 
- * Updated: Added language filtering from GitHub data, table/card view toggle,
- * improved search (includes languages/features), URL-based filter persistence,
- * and enhanced empty state with suggestions.
+ * Updated: Simplified - uses GitHub languages only for language filtering
  */
 
 'use client';
@@ -25,6 +23,54 @@ type ViewMode = 'card' | 'table';
 // Format category for display (capitalize first letter)
 function formatCategory(category: Category): string {
   return category.charAt(0).toUpperCase() + category.slice(1);
+}
+
+// Collapsible filter section component
+function FilterSection({ 
+  title, 
+  isOpen, 
+  onToggle, 
+  activeCount,
+  children 
+}: { 
+  title: string; 
+  isOpen: boolean; 
+  onToggle: () => void;
+  activeCount: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-b border-[var(--color-border)] last:border-b-0">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-3 py-2.5 text-left group hover:bg-[var(--color-surface-elevated)] transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide group-hover:text-[var(--color-text-secondary)] transition-colors">
+            {title}
+          </span>
+          {activeCount > 0 && (
+            <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#3165D4] text-white rounded-full">
+              {activeCount}
+            </span>
+          )}
+        </div>
+        <svg 
+          className={`w-4 h-4 text-[var(--color-text-muted)] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="pb-3">
+          {children}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function FilterBar({ projects }: FilterBarProps) {
@@ -49,15 +95,23 @@ export function FilterBar({ projects }: FilterBarProps) {
     (searchParams.get('view') as ViewMode) || 'card'
   );
 
-  // Compute unique languages from all projects
+  // Collapsible section states - auto-expand if has active filters
+  const [sectionsOpen, setSectionsOpen] = useState({
+    categories: true, // Always start open
+    features: (searchParams.get('features')?.split(',').filter(Boolean).length ?? 0) > 0,
+    languages: (searchParams.get('lang')?.split(',').filter(Boolean).length ?? 0) > 0,
+  });
+
+  const toggleSection = (section: keyof typeof sectionsOpen) => {
+    setSectionsOpen(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  // Compute unique languages from all projects (via GitHub)
   const allLanguages = useMemo(() => {
     const langs = new Set<string>();
     projects.forEach(p => {
       if (p.github?.languages) {
         p.github.languages.forEach(l => langs.add(l));
-      }
-      if (p.primaryLanguage) {
-        langs.add(p.primaryLanguage);
       }
     });
     return Array.from(langs).sort();
@@ -126,8 +180,6 @@ export function FilterBar({ projects }: FilterBarProps) {
           p.description.toLowerCase().includes(q) ||
           p.verusFeatures.some(f => f.toLowerCase().includes(q)) ||
           p.github?.languages.some(l => l.toLowerCase().includes(q)) ||
-          p.primaryLanguage?.toLowerCase().includes(q) ||
-          p.installCommand?.toLowerCase().includes(q) ||
           p.category.toLowerCase().includes(q)
       );
     }
@@ -147,8 +199,7 @@ export function FilterBar({ projects }: FilterBarProps) {
     // Languages (OR logic - matches any selected language)
     if (selectedLanguages.length > 0) {
       result = result.filter((p) => {
-        const projectLangs = [...(p.github?.languages || [])];
-        if (p.primaryLanguage) projectLangs.push(p.primaryLanguage);
+        const projectLangs = p.github?.languages || [];
         return selectedLanguages.some(l => projectLangs.includes(l));
       });
     }
@@ -187,99 +238,116 @@ export function FilterBar({ projects }: FilterBarProps) {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-5 mb-8 sm:mb-10">
-        {/* Search Bar */}
-        <div className="relative w-full">
-           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-             <svg className="w-5 h-5 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      <div className="flex flex-col gap-4 mb-6 sm:mb-8">
+        {/* Compact Search Bar */}
+        <div className="relative w-full max-w-sm">
+           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+             <svg className="w-4 h-4 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
            </div>
            <input
             type="text"
-            placeholder={`Search by name, feature, or language...`}
+            placeholder="Filter projects..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 sm:h-14 pl-12 pr-4 text-base sm:text-lg bg-[var(--color-surface)] border border-[var(--color-border-strong)] rounded-xl sm:rounded-2xl text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none focus:border-[#3165D4] focus:ring-1 focus:ring-[#3165D4]/30 transition-all"
+            className="w-full h-9 pl-9 pr-3 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-border-strong)] transition-all"
           />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute inset-y-0 right-2 flex items-center text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
 
-        {/* Categories */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
-              Categories
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {CATEGORIES.map((category) => {
-              const isSelected = selectedCategories.includes(category);
-              return (
-                <button
-                  key={category}
-                  onClick={() => toggleCategory(category)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md border transition-colors ${
-                    isSelected
-                      ? 'bg-[var(--color-text-primary)] text-[var(--color-background)] border-transparent'
-                      : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
-                  }`}
-                >
-                  {formatCategory(category)}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Features */}
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
-            Features
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            {VERUS_FEATURES.map((feature) => {
-              const isSelected = selectedFeatures.includes(feature);
-              return (
-                <button
-                  key={feature}
-                  onClick={() => toggleFeature(feature)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md border transition-colors ${
-                    isSelected
-                      ? 'bg-[var(--color-text-primary)] text-[var(--color-background)] border-transparent'
-                      : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
-                  }`}
-                >
-                  {feature}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Languages */}
-        {allLanguages.length > 0 && (
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
-              Languages
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              {allLanguages.slice(0, 12).map((language) => {
-                const isSelected = selectedLanguages.includes(language);
+        {/* Collapsible Filters */}
+        <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
+          {/* Categories */}
+          <FilterSection
+            title="Categories"
+            isOpen={sectionsOpen.categories}
+            onToggle={() => toggleSection('categories')}
+            activeCount={selectedCategories.length}
+          >
+            <div className="flex flex-wrap gap-1.5 px-3">
+              {CATEGORIES.map((category) => {
+                const isSelected = selectedCategories.includes(category);
                 return (
                   <button
-                    key={language}
-                    onClick={() => toggleLanguage(language)}
+                    key={category}
+                    onClick={() => toggleCategory(category)}
                     className={`px-2.5 py-1 text-xs font-medium rounded-md border transition-colors ${
                       isSelected
-                        ? 'bg-[#3165D4] text-white border-transparent'
+                        ? 'bg-[var(--color-text-primary)] text-[var(--color-background)] border-transparent'
                         : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
                     }`}
                   >
-                    {language}
+                    {formatCategory(category)}
                   </button>
                 );
               })}
             </div>
-          </div>
-        )}
+          </FilterSection>
+
+          {/* Features */}
+          <FilterSection
+            title="Features"
+            isOpen={sectionsOpen.features}
+            onToggle={() => toggleSection('features')}
+            activeCount={selectedFeatures.length}
+          >
+            <div className="flex flex-wrap gap-1.5 px-3">
+              {VERUS_FEATURES.map((feature) => {
+                const isSelected = selectedFeatures.includes(feature);
+                return (
+                  <button
+                    key={feature}
+                    onClick={() => toggleFeature(feature)}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md border transition-colors ${
+                      isSelected
+                        ? 'bg-[var(--color-text-primary)] text-[var(--color-background)] border-transparent'
+                        : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
+                    }`}
+                  >
+                    {feature}
+                  </button>
+                );
+              })}
+            </div>
+          </FilterSection>
+
+          {/* Languages */}
+          {allLanguages.length > 0 && (
+            <FilterSection
+              title="Languages"
+              isOpen={sectionsOpen.languages}
+              onToggle={() => toggleSection('languages')}
+              activeCount={selectedLanguages.length}
+            >
+              <div className="flex flex-wrap gap-1.5 px-3">
+                {allLanguages.slice(0, 12).map((language) => {
+                  const isSelected = selectedLanguages.includes(language);
+                  return (
+                    <button
+                      key={language}
+                      onClick={() => toggleLanguage(language)}
+                      className={`px-2.5 py-1 text-xs font-medium rounded-md border transition-colors ${
+                        isSelected
+                          ? 'bg-[#3165D4] text-white border-transparent'
+                          : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
+                      }`}
+                    >
+                      {language}
+                    </button>
+                  );
+                })}
+              </div>
+            </FilterSection>
+          )}
+        </div>
 
         {/* Sort + View Toggle + Clear Row */}
         <div className="flex items-center justify-between gap-3 pt-1">
@@ -380,7 +448,6 @@ export function FilterBar({ projects }: FilterBarProps) {
               <tr className="border-b border-[var(--color-border)]">
                 <th className="text-left py-2 px-3 text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide">Project</th>
                 <th className="text-left py-2 px-3 text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide hidden sm:table-cell">Language</th>
-                <th className="text-left py-2 px-3 text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide hidden md:table-cell">Install</th>
                 <th className="text-right py-2 px-3 text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide hidden sm:table-cell">Stats</th>
                 <th className="text-right py-2 px-3 text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide">Updated</th>
               </tr>

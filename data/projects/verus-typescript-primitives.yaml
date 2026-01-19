@@ -1,6 +1,5 @@
 # verus-typescript-primitives.yaml
 # TypeScript/JavaScript SDK for Verus blockchain data structures
-# Created: Developer library example with install command support
 
 name: "verus-typescript-primitives"
 slug: "verus-typescript-primitives"
@@ -59,12 +58,3 @@ verusFeatures:
   - DeFi
   - Data
 
-maintainer: "VerusCoin"
-
-# Developer-focused fields
-primaryLanguage: "TypeScript"
-packageManager: "npm"
-installCommand: "yarn add verus-typescript-primitives"
-platformSupport:
-  - web
-  - node
