@@ -4,12 +4,15 @@
  * 
  * Updated: Uses unified image path structure at /images/projects/{slug}/
  * Screenshots auto-detected from project folder, dimensions passed to gallery.
+ * 
+ * Security: Added rehype-sanitize to prevent XSS attacks in markdown content.
  */
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Markdown from 'react-markdown';
+import rehypeSanitize from 'rehype-sanitize';
 import { getAllProjects, getProjectBySlug } from '@/lib/projects';
 import { getScreenshotDimensions } from '@/lib/screenshots';
 import { VerusFeatureTag } from '@/components/VerusFeatureTag';
@@ -217,7 +220,7 @@ export default async function ProjectPage({ params }: PageProps) {
             About
           </h2>
           <div className="prose prose-sm max-w-none">
-            <Markdown>{project.longDescription}</Markdown>
+            <Markdown rehypePlugins={[rehypeSanitize]}>{project.longDescription}</Markdown>
           </div>
         </div>
 

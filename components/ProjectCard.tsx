@@ -2,7 +2,9 @@
  * ProjectCard component
  * Compact horizontal list item with language badge for libraries
  * 
- * Updated: Uses Next.js Image for optimized logo loading
+ * Updated: Fixed header overflow for long project names. Moved language badge
+ * from header to footer row (with feature tags). Header now only has title + 
+ * small timestamp, giving title maximum space before truncation.
  */
 
 import Link from 'next/link';
@@ -43,22 +45,14 @@ export function ProjectCard({ project }: { project: Project }) {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start sm:items-center justify-between gap-2 mb-1">
-            <div className="flex items-center gap-2">
-              <h3 className="text-base sm:text-lg font-medium text-[var(--color-text-primary)] truncate">
-                {project.name}
-              </h3>
-              {/* Language badge for libraries */}
-              {isLibrary && primaryLang && (
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-1.5 py-0.5 text-xs bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)] rounded border border-[var(--color-border)]">
-                  <LanguageDot language={primaryLang} />
-                  {primaryLang}
-                </span>
-              )}
-            </div>
+          {/* Header row: Name + timestamp */}
+          <div className="flex items-start justify-between gap-3 mb-1">
+            <h3 className="text-base sm:text-lg font-medium text-[var(--color-text-primary)] truncate">
+              {project.name}
+            </h3>
             
             {project.github && (
-              <span className="hidden sm:block text-xs text-[var(--color-text-muted)] font-mono shrink-0">
+              <span className="hidden sm:block text-xs text-[var(--color-text-muted)] whitespace-nowrap shrink-0">
                 {timeAgo(project.github.lastCommit)}
               </span>
             )}
@@ -68,8 +62,16 @@ export function ProjectCard({ project }: { project: Project }) {
             {project.description}
           </p>
 
+          {/* Footer: Tags + stats */}
           <div className="flex items-center justify-between gap-2">
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {/* Language badge for libraries - shown first */}
+              {isLibrary && primaryLang && (
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-1.5 py-0.5 text-xs bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)] rounded border border-[var(--color-border)]">
+                  <LanguageDot language={primaryLang} />
+                  {primaryLang}
+                </span>
+              )}
               {project.verusFeatures.map((feature) => (
                 <VerusFeatureTag key={feature} feature={feature} />
               ))}

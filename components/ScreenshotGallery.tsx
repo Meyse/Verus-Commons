@@ -2,8 +2,8 @@
  * ScreenshotGallery component
  * 
  * Auto-detects image aspect ratios and displays accordingly:
- * - Landscape images: horizontal scroll layout
- * - Portrait/mobile images: flexible grid (3-4 columns)
+ * - Landscape images: horizontal scroll layout with object-contain (shows full image)
+ * - Portrait/mobile images: horizontal scroll with max-height constraint (shows full image)
  * - Mixed: adapts based on majority
  * - Single image: centered with max-width
  * 
@@ -13,6 +13,8 @@
  * - Uses unified image path structure at /images/projects/{slug}/
  * - Uses build-time dimension extraction when available (eliminates double-loading)
  * - Optimized sizes prop for each layout to serve appropriately sized images
+ * - Changed to object-contain for both layouts to show complete images without cropping
+ * - Portrait images use horizontal scroll with 400px max-height for better page balance
  */
 
 'use client';
@@ -177,13 +179,13 @@ export function ScreenshotGallery({
             </button>
           </div>
         ) : isLandscapeLayout ? (
-          // Landscape: horizontal scroll (280px height, ~400-500px width)
+          // Landscape: horizontal scroll with object-contain to show full images
           <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin">
             {images.map((image, index) => (
               <button
                 key={image.src}
                 onClick={() => openLightbox(index)}
-                className="relative flex-shrink-0 rounded-lg overflow-hidden border border-[var(--color-border)] transition-opacity hover:opacity-90 cursor-zoom-in"
+                className="relative flex-shrink-0 rounded-lg overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface-elevated)] transition-opacity hover:opacity-90 cursor-zoom-in"
                 style={{
                   height: '280px',
                   width: `${(image.width / image.height) * 280}px`,
@@ -193,7 +195,7 @@ export function ScreenshotGallery({
                   src={image.src}
                   alt={`Screenshot ${index + 1}`}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   priority={index === 0}
                   sizes="500px"
                 />
@@ -201,21 +203,25 @@ export function ScreenshotGallery({
             ))}
           </div>
         ) : (
-          // Portrait/mixed: grid
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          // Portrait/mobile: horizontal scroll with max-height to show full images
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin">
             {images.map((image, index) => (
               <button
                 key={image.src}
                 onClick={() => openLightbox(index)}
-                className="relative rounded-lg overflow-hidden border border-[var(--color-border)] transition-opacity hover:opacity-90 cursor-zoom-in aspect-[9/16]"
+                className="relative flex-shrink-0 rounded-lg overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface-elevated)] transition-opacity hover:opacity-90 cursor-zoom-in"
+                style={{
+                  height: '400px',
+                  width: `${(image.width / image.height) * 400}px`,
+                }}
               >
                 <Image
                   src={image.src}
                   alt={`Screenshot ${index + 1}`}
                   fill
-                  className="object-cover"
-                  priority={index < 4}
-                  sizes="(max-width: 640px) 50vw, 25vw"
+                  className="object-contain"
+                  priority={index < 3}
+                  sizes="250px"
                 />
               </button>
             ))}

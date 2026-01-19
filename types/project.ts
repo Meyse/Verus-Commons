@@ -4,6 +4,9 @@
  * 
  * Updated: Simplified schema - removed developer-focused fields (primaryLanguage,
  * installCommand, etc.) as GitHub repos contain this information directly.
+ * 
+ * Security: YAML files are validated against Zod schema in lib/validation.ts.
+ * All URLs (repo, liveUrl, docsUrl) are validated to prevent malicious links.
  */
 
 export const VERUS_FEATURES = [

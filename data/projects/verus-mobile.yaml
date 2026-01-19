@@ -1,0 +1,31 @@
+# verus-mobile.yaml
+# Created: Verus Mobile project configuration for the commons directory
+
+name: "Verus Mobile"
+slug: "verus-mobile"
+description: "Multi-currency iOS/Android wallet for the Verus ecosystem"
+longDescription: |
+  Verus Mobile is the official mobile wallet for the Verus Protocol, available on both iOS and Android. It provides a complete mobile experience for managing your VRSC and other supported cryptocurrencies.
+
+  ## Features
+  
+  - Multiple account support with different keys on the same device
+  - VerusPay QR scanner for instant transaction confirmation
+  - Support for 11+ different cryptocurrencies
+  - Create VerusPay invoices compatible with the Verus Mobile app
+  - VerusID integration for secure authentication
+  
+  ## Privacy
+  
+  No personal data is stored or collected by the Verus Mobile application, except as necessary for authentication. All authentication data is stored locally. Transaction signing is done locally and private keys are never shared over any network.
+
+category: "wallet"
+repo: "https://github.com/VerusCoin/Verus-Mobile"
+liveUrl: "https://verus.io/wallet"
+docsUrl: "https://docs.verus.io"
+
+verusFeatures:
+  - VerusID
+  - Currencies
+  - DeFi
+  - Cross-chain

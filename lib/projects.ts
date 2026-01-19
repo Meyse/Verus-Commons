@@ -4,6 +4,10 @@
  * 
  * Updated: Unified image structure at public/images/projects/{slug}/
  * All assets (logo, screenshots, featured) auto-detected from single folder.
+ * 
+ * Security: Added slug validation to prevent path traversal attacks.
+ * Security: Added Zod schema validation for YAML content.
+ * Security: Added URL validation for external links.
  */
 
 import fs from 'fs';
@@ -11,9 +15,44 @@ import path from 'path';
 import { parse } from 'yaml';
 import { Project, ProjectYAML } from '@/types/project';
 import { fetchGitHubData, parseGitHubUrl } from './github';
+import { validateProjectYAML, ValidatedProjectYAML } from './validation';
 
 const PROJECTS_DIR = path.join(process.cwd(), 'data', 'projects');
 const IMAGES_DIR = path.join(process.cwd(), 'public', 'images', 'projects');
+
+/**
+ * Validate and sanitize a slug to prevent path traversal attacks.
+ * Only allows lowercase letters, numbers, and hyphens.
+ * Returns null if the slug is invalid.
+ */
+function validateSlug(slug: string): string | null {
+  // Only allow lowercase alphanumeric characters and hyphens
+  const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  
+  if (!slug || typeof slug !== 'string') {
+    return null;
+  }
+  
+  // Normalize and trim
+  const normalized = slug.toLowerCase().trim();
+  
+  // Check for path traversal attempts
+  if (normalized.includes('..') || normalized.includes('/') || normalized.includes('\\')) {
+    return null;
+  }
+  
+  // Validate against allowed pattern
+  if (!slugRegex.test(normalized)) {
+    return null;
+  }
+  
+  // Limit length to prevent abuse
+  if (normalized.length > 100) {
+    return null;
+  }
+  
+  return normalized;
+}
 
 /** Categories eligible for featured section */
 const FEATURED_ELIGIBLE_CATEGORIES = ['app', 'wallet', 'dashboard'];
@@ -69,7 +108,27 @@ export function getProjectScreenshots(slug: string): string[] {
 }
 
 /**
+ * Parse and validate a project YAML file.
+ * Returns validated data or null if validation fails.
+ */
+function parseAndValidateProject(filePath: string, filename: string): ValidatedProjectYAML | null {
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const rawYaml = parse(content);
+    
+    // Validate against schema - throws on error
+    const validated = validateProjectYAML(rawYaml, filename);
+    return validated;
+  } catch (error) {
+    // Log validation errors but don't crash the build
+    console.error(`Failed to parse/validate ${filename}:`, error instanceof Error ? error.message : error);
+    return null;
+  }
+}
+
+/**
  * Get all projects with GitHub data merged in
+ * Security: Validates each YAML file against schema before processing
  */
 export async function getAllProjects(): Promise<Project[]> {
   if (!fs.existsSync(PROJECTS_DIR)) return [];
@@ -77,42 +136,67 @@ export async function getAllProjects(): Promise<Project[]> {
   // Exclude template file (starts with underscore)
   const files = fs.readdirSync(PROJECTS_DIR).filter((f) => f.endsWith('.yaml') && !f.startsWith('_'));
   
-  const projects = await Promise.all(
-    files.map(async (file) => {
-      const content = fs.readFileSync(path.join(PROJECTS_DIR, file), 'utf-8');
-      const yaml = parse(content) as ProjectYAML;
-      const github = await fetchGitHubData(yaml.repo);
-      
-      const parsedRepo = parseGitHubUrl(yaml.repo);
-      const maintainer = yaml.maintainer || parsedRepo?.owner || 'Unknown';
-      const logo = getProjectLogo(yaml.slug);
-      const screenshots = getProjectScreenshots(yaml.slug);
+  const projectPromises = files.map(async (file) => {
+    const filePath = path.join(PROJECTS_DIR, file);
+    const validated = parseAndValidateProject(filePath, file);
+    
+    // Skip invalid projects
+    if (!validated) {
+      return null;
+    }
+    
+    const github = await fetchGitHubData(validated.repo);
+    
+    const parsedRepo = parseGitHubUrl(validated.repo);
+    const maintainer = validated.maintainer || parsedRepo?.owner || 'Unknown';
+    const logo = getProjectLogo(validated.slug);
+    const screenshots = getProjectScreenshots(validated.slug);
 
-      return { ...yaml, maintainer, logo, screenshots, github } as Project;
-    })
-  );
-
-  return projects;
+    return { ...validated, maintainer, logo, screenshots, github } as Project;
+  });
+  
+  const results = await Promise.all(projectPromises);
+  
+  // Filter out null (invalid) projects
+  return results.filter((p): p is Project => p !== null);
 }
 
 /**
  * Get a single project by slug
+ * Security: Validates slug to prevent path traversal attacks
+ * Security: Validates YAML content against schema
  */
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  const filePath = path.join(PROJECTS_DIR, `${slug}.yaml`);
+  // Validate slug to prevent path traversal
+  const validSlug = validateSlug(slug);
+  if (!validSlug) {
+    return null;
+  }
+  
+  const filePath = path.join(PROJECTS_DIR, `${validSlug}.yaml`);
+  
+  // Additional safety: verify the resolved path is within PROJECTS_DIR
+  const resolvedPath = path.resolve(filePath);
+  if (!resolvedPath.startsWith(path.resolve(PROJECTS_DIR))) {
+    return null;
+  }
   
   if (!fs.existsSync(filePath)) return null;
 
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const yaml = parse(content) as ProjectYAML;
-  const github = await fetchGitHubData(yaml.repo);
+  // Parse and validate the YAML content
+  const validated = parseAndValidateProject(filePath, `${validSlug}.yaml`);
+  if (!validated) {
+    return null;
+  }
   
-  const parsedRepo = parseGitHubUrl(yaml.repo);
-  const maintainer = yaml.maintainer || parsedRepo?.owner || 'Unknown';
-  const logo = getProjectLogo(slug);
-  const screenshots = getProjectScreenshots(slug);
+  const github = await fetchGitHubData(validated.repo);
   
-  return { ...yaml, maintainer, logo, screenshots, github };
+  const parsedRepo = parseGitHubUrl(validated.repo);
+  const maintainer = validated.maintainer || parsedRepo?.owner || 'Unknown';
+  const logo = getProjectLogo(validSlug);
+  const screenshots = getProjectScreenshots(validSlug);
+  
+  return { ...validated, maintainer, logo, screenshots, github };
 }
 
 /**
