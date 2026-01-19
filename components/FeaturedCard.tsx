@@ -2,7 +2,8 @@
  * FeaturedCard component
  * Displays featured project with featured image banner
  * 
- * Updated: Uses unified image path structure at /images/projects/{slug}/
+ * Updated: Uses consistent 3:1 aspect ratio for featured image area
+ * across all screen sizes to maintain uniform proportions.
  * Projects must have a featured.png/jpg in their project folder.
  */
 
@@ -22,8 +23,8 @@ export function FeaturedCard({ project }: { project: Project }) {
     >
       {/* Graphic card layout - all screen sizes */}
       <div>
-        {/* Featured Image Area */}
-        <div className="h-24 sm:h-28 lg:h-36 w-full relative overflow-hidden bg-[var(--color-surface-elevated)]">
+        {/* Featured Image Area - consistent aspect ratio across all screen sizes */}
+        <div className="aspect-[3/1] w-full relative overflow-hidden bg-[var(--color-surface-elevated)]">
           {featuredImage && (
             <Image
               src={`/images/projects/${project.slug}/${featuredImage}`}

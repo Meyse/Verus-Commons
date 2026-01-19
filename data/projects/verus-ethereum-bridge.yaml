@@ -1,0 +1,45 @@
+# verus-ethereum-bridge.yaml
+# Created: YAML configuration for the Verus Ethereum Bridge web application
+
+# ============================================================================
+# REQUIRED FIELDS
+# ============================================================================
+
+name: "Verus-Ethereum Bridge"
+slug: "verus-ethereum-bridge"
+description: "Web interface for bridging assets between Verus and Ethereum networks"
+
+longDescription: |
+  The Verus Ethereum Bridge is a web application that provides an interface for cross-chain asset transfers between the Verus Protocol and Ethereum blockchain.
+  
+  ## Features
+  
+  - **Token Bridging**: Transfer tokens between Verus and Ethereum networks
+  - **NFT Support**: Bridge NFTs across chains
+  - **Real-time Stats**: View Bridge.vETH liquidity pool statistics and reserve currency balances
+  - **Price Tracking**: Monitor reserve currency prices in DAI with comparison to external sources
+  
+  ## Supported Reserve Currencies
+  
+  - VRSC (Verus Coin)
+  - DAI.vETH (DAI on Verus-Ethereum bridge)
+  - MKR.vETH (Maker on Verus-Ethereum bridge)
+  - vETH (Verus-wrapped Ethereum)
+  
+  ## How It Works
+  
+  The bridge leverages Verus Protocol's cross-chain technology to enable trustless transfers. Users can send tokens by specifying an I-Address, R-Address, or Ethereum address for bounceback conversions. The interface displays live liquidity pool data and current exchange rates.
+
+category: "app"
+repo: "https://github.com/VerusCoin/VerusBridgeWebsite"
+
+verusFeatures:
+  - Cross-chain
+  - Currencies
+  - DeFi
+
+# ============================================================================
+# OPTIONAL FIELDS
+# ============================================================================
+
+liveUrl: "https://eth.verusbridge.io"

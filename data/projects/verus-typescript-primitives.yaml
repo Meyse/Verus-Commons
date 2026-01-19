@@ -1,7 +1,7 @@
 # verus-typescript-primitives.yaml
 # TypeScript/JavaScript SDK for Verus blockchain data structures
 
-name: "verus-typescript-primitives"
+name: "Verus TypeScript Primitives"
 slug: "verus-typescript-primitives"
 description: "TypeScript/JavaScript SDK for Verus blockchain data structures and RPC API"
 longDescription: |
@@ -50,7 +50,6 @@ longDescription: |
 
 category: "library"
 repo: "https://github.com/VerusCoin/verus-typescript-primitives"
-docsUrl: "https://github.com/VerusCoin/verus-typescript-primitives#readme"
 
 verusFeatures:
   - VerusID

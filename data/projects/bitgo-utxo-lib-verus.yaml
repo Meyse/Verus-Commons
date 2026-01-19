@@ -1,0 +1,66 @@
+# bitgo-utxo-lib-verus.yaml
+# Created: YAML configuration for the BitGo UTXO library with Verus support
+
+# ============================================================================
+# REQUIRED FIELDS
+# ============================================================================
+
+name: "BitGo UTXO Library (Verus)"
+slug: "bitgo-utxo-lib-verus"
+description: "UTXO transaction building library with Verus support, forked from BitGoJS"
+
+longDescription: |
+  A fork of BitGo's UTXO library (`bitgo-utxo-lib`) extended to support Verus Protocol. This library provides transaction building capabilities for UTXO-based cryptocurrencies.
+  
+  ## Features
+  
+  - **Transaction Building**: Build and sign UTXO transactions for Verus and other supported coins
+  - **Multi-signature Support**: Advanced multi-sig transaction capabilities
+  - **HD Wallets**: Hierarchical Deterministic wallet support (BIP32, BIP39, BIP44, BIP49)
+  - **SegWit Compatible**: Full SegWit address and transaction support
+  - **Cross-platform**: Works in Node.js and modern browsers
+  
+  ## Supported Coins
+  
+  - Verus (VRSC)
+  - Bitcoin
+  - Bitcoin Cash
+  - Litecoin
+  - Zcash (Sapling compatible)
+  - Dash
+  - Bitcoin Gold
+  - Bitcoin SV
+  
+  ## Installation
+  
+  ```bash
+  npm install @bitgo/utxo-lib
+  ```
+  
+  ## Usage
+  
+  ```javascript
+  var bitGoUTXO = require('@bitgo/utxo-lib');
+  
+  // Generate a random keypair
+  const keyPair = bitGoUTXO.ECPair.makeRandom();
+  const wif = keyPair.toWIF();
+  ```
+  
+  ## Security
+  
+  - Strong random number generation
+  - PGP signed releases
+  - Coverage > 90%
+
+category: "library"
+repo: "https://github.com/VerusCoin/BitGoJS/tree/utxo-lib-verus"
+
+verusFeatures:
+  - Currencies
+
+# ============================================================================
+# OPTIONAL FIELDS
+# ============================================================================
+
+docsUrl: "https://github.com/VerusCoin/BitGoJS/blob/utxo-lib-verus/README.md"

@@ -1,0 +1,65 @@
+# verusid-ts-client.yaml
+# Created: YAML configuration for the VerusID TypeScript client library
+
+# ============================================================================
+# REQUIRED FIELDS
+# ============================================================================
+
+name: "VerusID TypeScript Client"
+slug: "verusid-ts-client"
+description: "TypeScript client library for VerusID authentication and signatures"
+
+longDescription: |
+  The `verusid-ts-client` library is a TypeScript client designed to utilize VerusID functionality in a lite client, providing functionalities for creating and verifying digital signatures, handling login consents, managing VerusPay invoices, and more.
+  
+  ## Features
+  
+  - **Message & Hash Signing**: Sign messages and hashes with VerusID signatures
+  - **Signature Verification**: Verify VerusID signatures on messages
+  - **Login Consent Handling**: Create, sign, and verify VerusID login consent requests and responses
+  - **VerusPay Invoices**: Create, sign, and verify VerusPay v3 invoices
+  - **Blockchain Interaction**: Get current blockchain height and chain ID
+  
+  ## Installation
+  
+  ```bash
+  yarn add https://github.com/VerusCoin/verusid-ts-client.git
+  ```
+  
+  ## Usage Example
+  
+  ```typescript
+  import VerusIdInterface from 'verusid-ts-client';
+  
+  const verusIdClient = new VerusIdInterface(
+    'root-system-currency-id',
+    'http://your-verusd-node.com',
+    config
+  );
+  
+  // Sign a message
+  const signature = await verusIdClient.signMessage(
+    'VerusID@',
+    'Hello, Verus!',
+    primaryAddrWif
+  );
+  
+  // Verify a signature
+  const isValid = await verusIdClient.verifyMessage(
+    'VerusID@',
+    signature,
+    'Hello, Verus!'
+  );
+  ```
+
+category: "library"
+repo: "https://github.com/VerusCoin/verusid-ts-client"
+
+verusFeatures:
+  - VerusID
+
+# ============================================================================
+# OPTIONAL FIELDS
+# ============================================================================
+
+docsUrl: "https://github.com/VerusCoin/verusid-ts-client#readme"

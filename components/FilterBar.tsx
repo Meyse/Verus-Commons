@@ -2,7 +2,8 @@
  * FilterBar component
  * Compact filtering with collapsible sections, language support, and URL persistence
  * 
- * Updated: Simplified - uses GitHub languages only for language filtering
+ * Updated: Added bidirectional URL sync - now properly syncs URL params to state
+ * when navigating via external links (e.g., "View all libraries").
  */
 
 'use client';
@@ -105,6 +106,38 @@ export function FilterBar({ projects }: FilterBarProps) {
   const toggleSection = (section: keyof typeof sectionsOpen) => {
     setSectionsOpen(prev => ({ ...prev, [section]: !prev[section] }));
   };
+
+  // Sync URL params → state (for external navigation like "View all libraries" link)
+  useEffect(() => {
+    const urlCategories = (searchParams.get('category')?.split(',').filter(Boolean) as Category[]) || [];
+    const urlFeatures = (searchParams.get('features')?.split(',').filter(Boolean) as VerusFeature[]) || [];
+    const urlLanguages = searchParams.get('lang')?.split(',').filter(Boolean) || [];
+    const urlSearch = searchParams.get('q') || '';
+    const urlSort = (searchParams.get('sort') as SortOption) || 'updated';
+    const urlView = (searchParams.get('view') as ViewMode) || 'card';
+
+    // Use functional updates to avoid dependency on current state
+    // Only update if values differ to prevent infinite loops with URL-writing effect
+    setSelectedCategories(prev => 
+      JSON.stringify(prev) === JSON.stringify(urlCategories) ? prev : urlCategories
+    );
+    setSelectedFeatures(prev => 
+      JSON.stringify(prev) === JSON.stringify(urlFeatures) ? prev : urlFeatures
+    );
+    setSelectedLanguages(prev => 
+      JSON.stringify(prev) === JSON.stringify(urlLanguages) ? prev : urlLanguages
+    );
+    setSearch(prev => prev === urlSearch ? prev : urlSearch);
+    setSort(prev => prev === urlSort ? prev : urlSort);
+    setViewMode(prev => prev === urlView ? prev : urlView);
+
+    // Auto-expand sections that have active filters from URL
+    setSectionsOpen(prev => ({
+      ...prev,
+      features: urlFeatures.length > 0 || prev.features,
+      languages: urlLanguages.length > 0 || prev.languages,
+    }));
+  }, [searchParams]);
 
   // Compute unique languages from all projects (via GitHub)
   const allLanguages = useMemo(() => {

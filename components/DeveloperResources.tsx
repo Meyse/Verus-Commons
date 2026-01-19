@@ -2,7 +2,8 @@
  * DeveloperResources component
  * Dedicated section showcasing core libraries and SDKs for developers
  * 
- * Updated: Uses Next.js Image for optimized logo loading
+ * Updated: "View all libraries" link now includes #projects anchor
+ * to scroll users to the filtered results section.
  */
 
 import Link from 'next/link';
@@ -34,7 +35,7 @@ export function DeveloperResources({ libraries }: DeveloperResourcesProps) {
           </h2>
         </div>
         <Link 
-          href="/?category=library"
+          href="/?category=library#projects"
           className="text-xs text-[#3165D4] hover:underline"
         >
           View all libraries →
