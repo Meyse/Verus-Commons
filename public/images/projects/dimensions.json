@@ -1,0 +1,38 @@
+{
+  "nymia/featured.png": {
+    "width": 800,
+    "height": 300
+  },
+  "nymia/logo.png": {
+    "width": 128,
+    "height": 128
+  },
+  "verus-desktop/logo.png": {
+    "width": 128,
+    "height": 128
+  },
+  "verus-desktop/screenshot1.png": {
+    "width": 1920,
+    "height": 1080
+  },
+  "verus-desktop/screenshot2.png": {
+    "width": 1920,
+    "height": 1080
+  },
+  "verus-desktop/screenshot3.png": {
+    "width": 1920,
+    "height": 1080
+  },
+  "verus-mobile/screenshot1.png": {
+    "width": 1080,
+    "height": 1920
+  },
+  "verus-mobile/screenshot2.png": {
+    "width": 1080,
+    "height": 1920
+  },
+  "verus-mobile/screenshot3.png": {
+    "width": 1080,
+    "height": 1920
+  }
+}

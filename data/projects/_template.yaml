@@ -58,23 +58,28 @@ verusFeatures:
 # maintainer: "your-github-username"
 
 # ============================================================================
-# ASSETS (Optional)
+# IMAGES (All auto-detected from one folder)
 # ============================================================================
-
-# Logo - place in public/logos/
-#   - 128x128 pixels
-#   - PNG format
-#   - Solid background (no transparency)
-# logo: "your-project-slug.png"
-
-# Screenshots - place in public/screenshots/your-project-slug/
-#   - Maximum 6 images
-#   - PNG or JPG format
-#   - Max 1MB per image
-# screenshots:
-#   - screen1.png
-#   - screen2.png
-#   - screen3.png
+#
+# All project images go in: public/images/projects/{your-slug}/
+#
+# Create this folder and add any of the following files:
+#
+#   logo.png (or .jpg)
+#     - Your project logo
+#     - Dimensions: 128x128 pixels
+#     - Solid background recommended
+#
+#   screenshot1.png, screenshot2.png, ... screenshot6.png (or .jpg)
+#     - Up to 6 screenshots of your project
+#     - Max 1MB per image
+#     - Numbered 1-6
+#
+#   featured.png (or .jpg)
+#     - Banner image for homepage featured section
+#     - See below for requirements
+#
+# All files are auto-detected.
 
 # ============================================================================
 # FEATURED SECTION (Apps, Wallets, and Dashboards only)
@@ -84,15 +89,13 @@ verusFeatures:
 # 
 # Requirements:
 #   1. Your project must be category: "app", "wallet", or "dashboard"
-#   2. Add a featured image to: public/screenshots/your-project-slug/featured.png
-#      (or featured.jpg)
+#   2. Add a featured image: public/images/projects/{your-slug}/featured.png
 #
 # Featured Image Specifications:
-#   - Dimensions: 1200 x 400 pixels (3:1 aspect ratio)
+#   - Dimensions: 800 x 300 pixels
 #   - Format: PNG or JPG
-#   - Max size: 500KB
+#   - Max size: 300KB
 #   - Content: A compelling banner showcasing your app's UI or key feature
-#   - Tip: Make sure text/UI elements are readable at smaller sizes
 #
 # How it works:
 #   - Eligible projects are randomly selected and rotated daily (UTC)

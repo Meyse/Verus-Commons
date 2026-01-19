@@ -25,7 +25,7 @@ export function ProjectCard({ project }: { project: Project }) {
         <div className="shrink-0">
           {project.logo ? (
             <Image
-              src={`/logos/${project.logo}`}
+              src={`/images/projects/${project.slug}/${project.logo}`}
               alt={project.name}
               width={96}
               height={96}

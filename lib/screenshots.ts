@@ -3,6 +3,8 @@
  * 
  * Reads pre-extracted screenshot dimensions from dimensions.json
  * Generated at build time by scripts/extract-dimensions.js
+ * 
+ * Updated: Uses unified image path structure at /images/projects/{slug}/
  */
 
 import fs from 'fs';
@@ -34,7 +36,7 @@ function loadDimensions(): DimensionsMap {
     return dimensionsCache;
   }
 
-  const dimensionsPath = path.join(process.cwd(), 'public', 'screenshots', 'dimensions.json');
+  const dimensionsPath = path.join(process.cwd(), 'public', 'images', 'projects', 'dimensions.json');
   
   try {
     if (fs.existsSync(dimensionsPath)) {
@@ -71,7 +73,7 @@ export function getScreenshotDimensions(
     
     result.push({
       filename,
-      src: `/screenshots/${projectSlug}/${filename}`,
+      src: `/images/projects/${projectSlug}/${filename}`,
       width: dims.width,
       height: dims.height,
       isLandscape: dims.width > dims.height,

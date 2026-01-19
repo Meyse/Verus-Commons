@@ -2,8 +2,8 @@
  * Project data loading utilities
  * Reads YAML files from /data/projects/ and merges with GitHub data
  * 
- * Updated: Featured projects now auto-selected from eligible categories
- * (app, wallet, dashboard) with featured images, rotated daily via date-seeded shuffle
+ * Updated: Unified image structure at public/images/projects/{slug}/
+ * All assets (logo, screenshots, featured) auto-detected from single folder.
  */
 
 import fs from 'fs';
@@ -13,10 +13,60 @@ import { Project, ProjectYAML } from '@/types/project';
 import { fetchGitHubData, parseGitHubUrl } from './github';
 
 const PROJECTS_DIR = path.join(process.cwd(), 'data', 'projects');
-const SCREENSHOTS_DIR = path.join(process.cwd(), 'public', 'screenshots');
+const IMAGES_DIR = path.join(process.cwd(), 'public', 'images', 'projects');
 
 /** Categories eligible for featured section */
 const FEATURED_ELIGIBLE_CATEGORIES = ['app', 'wallet', 'dashboard'];
+
+/**
+ * Get the project images directory path
+ */
+function getProjectImagesDir(slug: string): string {
+  return path.join(IMAGES_DIR, slug);
+}
+
+/**
+ * Auto-detect logo for a project
+ * Looks for logo.png or logo.jpg in public/images/projects/{slug}/
+ */
+function getProjectLogo(slug: string): string | undefined {
+  const projectDir = getProjectImagesDir(slug);
+  if (!fs.existsSync(projectDir)) return undefined;
+  
+  if (fs.existsSync(path.join(projectDir, 'logo.png'))) {
+    return 'logo.png';
+  }
+  if (fs.existsSync(path.join(projectDir, 'logo.jpg'))) {
+    return 'logo.jpg';
+  }
+  return undefined;
+}
+
+/**
+ * Auto-detect screenshots for a project
+ * Looks for screenshot1.png, screenshot2.png, etc. in public/images/projects/{slug}/
+ * Supports both .png and .jpg formats
+ */
+export function getProjectScreenshots(slug: string): string[] {
+  const projectDir = getProjectImagesDir(slug);
+  if (!fs.existsSync(projectDir)) return [];
+  
+  const screenshots: string[] = [];
+  
+  // Check for screenshot1 through screenshot6
+  for (let i = 1; i <= 6; i++) {
+    const pngFile = `screenshot${i}.png`;
+    const jpgFile = `screenshot${i}.jpg`;
+    
+    if (fs.existsSync(path.join(projectDir, pngFile))) {
+      screenshots.push(pngFile);
+    } else if (fs.existsSync(path.join(projectDir, jpgFile))) {
+      screenshots.push(jpgFile);
+    }
+  }
+  
+  return screenshots;
+}
 
 /**
  * Get all projects with GitHub data merged in
@@ -35,8 +85,10 @@ export async function getAllProjects(): Promise<Project[]> {
       
       const parsedRepo = parseGitHubUrl(yaml.repo);
       const maintainer = yaml.maintainer || parsedRepo?.owner || 'Unknown';
+      const logo = getProjectLogo(yaml.slug);
+      const screenshots = getProjectScreenshots(yaml.slug);
 
-      return { ...yaml, maintainer, github } as Project;
+      return { ...yaml, maintainer, logo, screenshots, github } as Project;
     })
   );
 
@@ -57,20 +109,22 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   
   const parsedRepo = parseGitHubUrl(yaml.repo);
   const maintainer = yaml.maintainer || parsedRepo?.owner || 'Unknown';
+  const logo = getProjectLogo(slug);
+  const screenshots = getProjectScreenshots(slug);
   
-  return { ...yaml, maintainer, github };
+  return { ...yaml, maintainer, logo, screenshots, github };
 }
 
 /**
  * Check if a project has a featured image
  */
 function hasFeaturedImage(slug: string): boolean {
-  const projectScreenshotsDir = path.join(SCREENSHOTS_DIR, slug);
-  if (!fs.existsSync(projectScreenshotsDir)) return false;
+  const projectDir = getProjectImagesDir(slug);
+  if (!fs.existsSync(projectDir)) return false;
   
   return (
-    fs.existsSync(path.join(projectScreenshotsDir, 'featured.png')) ||
-    fs.existsSync(path.join(projectScreenshotsDir, 'featured.jpg'))
+    fs.existsSync(path.join(projectDir, 'featured.png')) ||
+    fs.existsSync(path.join(projectDir, 'featured.jpg'))
   );
 }
 
@@ -78,13 +132,13 @@ function hasFeaturedImage(slug: string): boolean {
  * Get the featured image filename for a project
  */
 export function getFeaturedImage(slug: string): string | null {
-  const projectScreenshotsDir = path.join(SCREENSHOTS_DIR, slug);
-  if (!fs.existsSync(projectScreenshotsDir)) return null;
+  const projectDir = getProjectImagesDir(slug);
+  if (!fs.existsSync(projectDir)) return null;
   
-  if (fs.existsSync(path.join(projectScreenshotsDir, 'featured.png'))) {
+  if (fs.existsSync(path.join(projectDir, 'featured.png'))) {
     return 'featured.png';
   }
-  if (fs.existsSync(path.join(projectScreenshotsDir, 'featured.jpg'))) {
+  if (fs.existsSync(path.join(projectDir, 'featured.jpg'))) {
     return 'featured.jpg';
   }
   return null;

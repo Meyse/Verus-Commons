@@ -58,24 +58,13 @@ export default function AddPage() {
             <li className="flex gap-3">
               <span className="text-[var(--color-text-muted)] font-medium">3.</span>
               <div>
-                <span className="text-[var(--color-text-primary)]">Add your logo (optional)</span>
+                <span className="text-[var(--color-text-primary)]">Add images (optional)</span>
                 <p className="mt-1 text-[var(--color-text-muted)]">
-                  Place your logo at{' '}
+                  Create a folder at{' '}
                   <code className="text-xs bg-[var(--color-surface-elevated)] px-1.5 py-0.5 rounded border border-[var(--color-border)]">
-                    public/logos/your-project-name.png
+                    public/images/projects/your-slug/
                   </code>
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-[var(--color-text-muted)] font-medium">4.</span>
-              <div>
-                <span className="text-[var(--color-text-primary)]">Add screenshots (optional)</span>
-                <p className="mt-1 text-[var(--color-text-muted)]">
-                  Create a folder and add images at{' '}
-                  <code className="text-xs bg-[var(--color-surface-elevated)] px-1.5 py-0.5 rounded border border-[var(--color-border)]">
-                    public/screenshots/your-project-slug/
-                  </code>
+                  {' '}and add logo.png, screenshot1.png, etc.
                 </p>
               </div>
             </li>
@@ -165,12 +154,8 @@ export default function AddPage() {
               <span className="text-[var(--color-text-muted)]">List of Verus features used (see below)</span>
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
-              <code className="text-[var(--color-text-primary)]">logo</code>
-              <span className="text-[var(--color-text-muted)]">128×128 PNG in public/logos/ (optional)</span>
-            </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
-              <code className="text-[var(--color-text-primary)]">screenshots</code>
-              <span className="text-[var(--color-text-muted)]">Max 6 PNG/JPG in public/screenshots/your-slug/ (optional)</span>
+              <code className="text-[var(--color-text-primary)]">images</code>
+              <span className="text-[var(--color-text-muted)]">Auto-detected from public/images/projects/your-slug/ (optional)</span>
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">maintainer</code>

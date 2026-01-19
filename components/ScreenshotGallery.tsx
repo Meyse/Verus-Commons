@@ -10,9 +10,9 @@
  * Includes lightbox for full-size viewing
  * 
  * Updated: 
+ * - Uses unified image path structure at /images/projects/{slug}/
  * - Uses build-time dimension extraction when available (eliminates double-loading)
  * - Optimized sizes prop for each layout to serve appropriately sized images
- *   (landscape thumbnails: 500px, portrait grid: 25vw, single: context-aware)
  */
 
 'use client';
@@ -67,7 +67,7 @@ export function ScreenshotGallery({
       const imagePromises = screenshots.map((filename) => {
         return new Promise<ImageData>((resolve) => {
           const img = new window.Image();
-          const src = `/screenshots/${projectSlug}/${filename}`;
+          const src = `/images/projects/${projectSlug}/${filename}`;
           img.onload = () => {
             resolve({
               src,

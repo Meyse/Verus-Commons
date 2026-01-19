@@ -14,7 +14,8 @@ longDescription: |
 
 category: "app"
 repo: "https://github.com/Meyse/nymia-desktop"
+liveUrl: "https://nymia.app"
 verusFeatures:
   - VerusID
-  - Blockchain
-  - Currencies
+  - Zero-knowledge privacy
+

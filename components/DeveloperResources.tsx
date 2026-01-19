@@ -62,7 +62,7 @@ function LibraryCard({ project }: { project: Project }) {
         {/* Logo / Icon */}
         {project.logo ? (
           <Image
-            src={`/logos/${project.logo}`}
+            src={`/images/projects/${project.slug}/${project.logo}`}
             alt={project.name}
             width={80}
             height={80}

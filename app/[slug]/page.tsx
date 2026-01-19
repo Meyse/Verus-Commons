@@ -2,9 +2,8 @@
  * Project detail page
  * Shows full project info with markdown description and sidebar, theme-aware
  * 
- * Updated: Added build-time screenshot dimension extraction to eliminate
- * client-side double-loading of images. Dimensions are passed to gallery
- * from server component, with fallback to client-side detection in dev.
+ * Updated: Uses unified image path structure at /images/projects/{slug}/
+ * Screenshots auto-detected from project folder, dimensions passed to gallery.
  */
 
 import Link from 'next/link';
@@ -52,7 +51,7 @@ export default async function ProjectPage({ params }: PageProps) {
         <div className="hidden md:flex md:items-start md:gap-4">
           {project.logo ? (
             <Image
-              src={`/logos/${project.logo}`}
+              src={`/images/projects/${project.slug}/${project.logo}`}
               alt={project.name}
               width={128}
               height={128}
@@ -112,7 +111,7 @@ export default async function ProjectPage({ params }: PageProps) {
           <div className="flex items-center gap-3 mb-3">
             {project.logo ? (
               <Image
-                src={`/logos/${project.logo}`}
+                src={`/images/projects/${project.slug}/${project.logo}`}
                 alt={project.name}
                 width={96}
                 height={96}

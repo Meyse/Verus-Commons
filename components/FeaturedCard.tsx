@@ -2,8 +2,8 @@
  * FeaturedCard component
  * Displays featured project with featured image banner
  * 
- * Updated: Now displays featured image instead of code window mockup.
- * Projects must have a featured.png/jpg in their screenshots folder.
+ * Updated: Uses unified image path structure at /images/projects/{slug}/
+ * Projects must have a featured.png/jpg in their project folder.
  */
 
 import Link from 'next/link';
@@ -26,7 +26,7 @@ export function FeaturedCard({ project }: { project: Project }) {
         <div className="h-24 sm:h-28 lg:h-36 w-full relative overflow-hidden bg-[var(--color-surface-elevated)]">
           {featuredImage && (
             <Image
-              src={`/screenshots/${project.slug}/${featuredImage}`}
+              src={`/images/projects/${project.slug}/${featuredImage}`}
               alt={`${project.name} featured image`}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -41,7 +41,7 @@ export function FeaturedCard({ project }: { project: Project }) {
           <div className="absolute top-2 right-2">
             {project.logo ? (
               <Image 
-                src={`/logos/${project.logo}`} 
+                src={`/images/projects/${project.slug}/${project.logo}`} 
                 alt="" 
                 width={64} 
                 height={64} 

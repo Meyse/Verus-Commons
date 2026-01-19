@@ -1,10 +1,12 @@
 /**
- * Build-time screenshot dimension extraction script
+ * Build-time image dimension extraction script
  * 
- * Scans /public/screenshots/ for images and extracts their dimensions.
+ * Scans /public/images/projects/ for images and extracts their dimensions.
  * Outputs a JSON file that can be read at build time to enable
  * server-side rendering of the ScreenshotGallery without client-side
  * dimension detection.
+ * 
+ * Updated: Uses unified image path structure at /public/images/projects/
  * 
  * Run: node scripts/extract-dimensions.js
  * Runs automatically before build via "prebuild" script in package.json
@@ -14,8 +16,8 @@ const fs = require('fs');
 const path = require('path');
 const { imageSize } = require('image-size');
 
-const SCREENSHOTS_DIR = path.join(process.cwd(), 'public', 'screenshots');
-const OUTPUT_FILE = path.join(process.cwd(), 'public', 'screenshots', 'dimensions.json');
+const IMAGES_DIR = path.join(process.cwd(), 'public', 'images', 'projects');
+const OUTPUT_FILE = path.join(process.cwd(), 'public', 'images', 'projects', 'dimensions.json');
 
 /**
  * Recursively find all image files in a directory
@@ -44,12 +46,12 @@ function findImages(dir, basePath = '') {
 }
 
 /**
- * Extract dimensions from all screenshots
+ * Extract dimensions from all project images
  */
 function extractDimensions() {
-  console.log('Extracting screenshot dimensions...');
+  console.log('Extracting image dimensions...');
   
-  const images = findImages(SCREENSHOTS_DIR);
+  const images = findImages(IMAGES_DIR);
   const dimensions = {};
   
   for (const { relativePath, fullPath } of images) {

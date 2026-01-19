@@ -232,7 +232,7 @@ export function GlobalSearch({ projects }: GlobalSearchProps) {
                           {/* Project icon/logo */}
                           {project.logo ? (
                             <Image 
-                              src={`/logos/${project.logo}`} 
+                              src={`/images/projects/${project.slug}/${project.logo}`} 
                               alt="" 
                               width={80}
                               height={80}
