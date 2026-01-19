@@ -5,6 +5,9 @@
  * Security: Added slug validation to prevent path traversal attacks.
  * Security: Added Zod schema validation for YAML content.
  * Security: Added URL validation for external links.
+ * 
+ * Updated: getLibraryProjects now filters to library category only
+ * and uses daily-rotating random shuffle instead of sorting by stars.
  */
 
 import fs from 'fs';
@@ -304,12 +307,19 @@ export async function getProjectsByMaintainer(name: string): Promise<Project[]> 
 }
 
 /**
- * Get all library projects (category: library or tool)
- * Sorted by stars
+ * Get library projects for Developer Resources section
+ * - Filters to category: library only
+ * - Returns 3 projects, shuffled daily using date-seeded randomization
  */
 export async function getLibraryProjects(): Promise<Project[]> {
   const allProjects = await getAllProjects();
-  return allProjects
-    .filter((p) => p.category === 'library' || p.category === 'tool')
-    .sort((a, b) => (b.github?.stars || 0) - (a.github?.stars || 0));
+  const libraries = allProjects.filter((p) => p.category === 'library');
+  
+  if (libraries.length === 0) return [];
+  
+  // Shuffle with daily seed and take top 3
+  const seed = getDailySeed();
+  const shuffled = seededShuffle(libraries, seed);
+  
+  return shuffled.slice(0, 3);
 }

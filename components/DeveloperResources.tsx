@@ -2,8 +2,9 @@
  * DeveloperResources component
  * Dedicated section showcasing core libraries and SDKs for developers
  * 
- * Updated: "View all libraries" link now includes #projects anchor
- * to scroll users to the filtered results section.
+ * Libraries are randomly rotated daily (same as featured projects).
+ * "View all libraries" link includes #projects anchor to scroll users
+ * to the filtered results section.
  */
 
 import Link from 'next/link';
@@ -18,7 +19,7 @@ interface DeveloperResourcesProps {
 export function DeveloperResources({ libraries }: DeveloperResourcesProps) {
   if (libraries.length === 0) return null;
 
-  // Show up to 3 libraries, sorted by stars
+  // Show up to 3 libraries (already shuffled daily by getLibraryProjects)
   const featured = libraries.slice(0, 3);
 
   if (featured.length === 0) return null;

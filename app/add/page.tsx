@@ -2,15 +2,16 @@
  * Add Project page
  * Instructions for submitting a project via pull request, theme-aware
  * 
- * Updated: Added character limits for all fields to match validation schema.
+ * Updated: Changed GitHub repository links from veruscoin/commons to Meyse/Verus-Commons.
+ * Added character limits for all fields to match validation schema.
  * Fixed description limit (was 100, should be 200). Screenshots max is 6.
  */
 
 'use client';
 
 export default function AddPage() {
-  const templateUrl = 'https://github.com/veruscoin/commons/blob/main/data/projects/_template.yaml';
-  const rawTemplateUrl = 'https://raw.githubusercontent.com/veruscoin/commons/main/data/projects/_template.yaml';
+  const templateUrl = 'https://github.com/Meyse/Verus-Commons/blob/main/data/projects/_template.yaml';
+  const rawTemplateUrl = 'https://raw.githubusercontent.com/Meyse/Verus-Commons/main/data/projects/_template.yaml';
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-12">
@@ -33,12 +34,12 @@ export default function AddPage() {
                 <p className="mt-1 text-[var(--color-text-muted)]">
                   Fork{' '}
                   <a
-                    href="https://github.com/veruscoin/commons"
+                    href="https://github.com/Meyse/Verus-Commons"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#3165D4]"
                   >
-                    github.com/veruscoin/commons
+                    github.com/Meyse/Verus-Commons
                   </a>{' '}
                   to your GitHub account.
                 </p>
