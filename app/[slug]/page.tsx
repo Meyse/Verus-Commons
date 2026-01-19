@@ -2,7 +2,8 @@
  * Project detail page
  * Shows full project info with markdown description and sidebar, theme-aware
  * 
- * Updated: Uses unified image path structure at /images/projects/{slug}/
+ * Updated: Fixed YAML source link to point to Meyse/Verus-Commons repository.
+ * Uses unified image path structure at /images/projects/{slug}/
  * Screenshots auto-detected from project folder, dimensions passed to gallery.
  * 
  * Security: Added rehype-sanitize to prevent XSS attacks in markdown content.
@@ -294,7 +295,7 @@ export default async function ProjectPage({ params }: PageProps) {
                 Download JSON
               </a>
               <a
-                href={`https://github.com/veruscoin/commons/blob/main/data/projects/${project.slug}.yaml`}
+                href={`https://github.com/Meyse/Verus-Commons/blob/main/data/projects/${project.slug}.yaml`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-[var(--color-text-secondary)]"
