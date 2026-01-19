@@ -6,10 +6,11 @@
  * - Instant search results in overlay
  * - Keyboard navigation (arrows, enter, escape)
  * - "/" shortcut to focus
- * - Mobile full-screen takeover
  * - Click outside to close
  * 
- * Updated: Uses Next.js Image for optimized logo loading
+ * Updated: Fixed mobile search UX - results now appear directly under
+ * search bar instead of at bottom of screen (which was hidden by keyboard).
+ * Backdrop now uses negative z-index so search bar stays visible.
  */
 
 'use client';
@@ -186,17 +187,17 @@ export function GlobalSearch({ projects }: GlobalSearchProps) {
       {/* Results Overlay */}
       {isOpen && query.trim() && (
         <>
-          {/* Backdrop - covers everything including header */}
+          {/* Backdrop - positioned behind the search container */}
           <div 
-            className="fixed inset-0 bg-black/50 sm:bg-black/20 z-[60]" 
+            className="fixed inset-0 bg-black/50 sm:bg-black/20 -z-10" 
             onClick={() => setIsOpen(false)} 
           />
           
-          {/* Results dropdown - above backdrop */}
-          <div className="fixed sm:absolute inset-x-0 bottom-0 sm:bottom-auto sm:inset-x-auto sm:left-0 sm:right-0 sm:top-full sm:mt-2 z-[70]">
-            <div className="bg-[var(--color-surface)] border border-[var(--color-border-strong)] sm:rounded-xl rounded-t-2xl shadow-2xl max-h-[70vh] sm:max-h-[400px] overflow-hidden flex flex-col">
-              {/* Mobile header */}
-              <div className="sm:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)]">
+          {/* Results dropdown - directly below search bar */}
+          <div className="absolute left-0 right-0 top-full mt-2">
+            <div className="bg-[var(--color-surface)] border border-[var(--color-border-strong)] rounded-xl shadow-2xl max-h-[50vh] sm:max-h-[400px] overflow-hidden flex flex-col">
+              {/* Results count header on mobile */}
+              <div className="sm:hidden flex items-center justify-between px-4 py-2 border-b border-[var(--color-border)]">
                 <span className="text-sm font-medium text-[var(--color-text-secondary)]">
                   {results.length > 0 ? `${results.length} result${results.length !== 1 ? 's' : ''}` : 'No results'}
                 </span>

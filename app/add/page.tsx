@@ -2,9 +2,8 @@
  * Add Project page
  * Instructions for submitting a project via pull request, theme-aware
  * 
- * Updated: Changed GitHub repository links from veruscoin/commons to Meyse/Verus-Commons.
- * Added character limits for all fields to match validation schema.
- * Fixed description limit (was 100, should be 200). Screenshots max is 6.
+ * Updated: Increased Field Reference grid column width from 120px to 140px/160px
+ * and gap from 2 to 4 for better spacing, especially for longDescription field.
  */
 
 'use client';
@@ -123,43 +122,43 @@ export default function AddPage() {
             Field Reference
           </h2>
           <div className="space-y-3 text-sm">
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">name</code>
               <span className="text-[var(--color-text-muted)]">Display name of your project, max 60 characters</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">slug</code>
               <span className="text-[var(--color-text-muted)]">URL-friendly identifier (lowercase, hyphens only), max 50 characters</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">description</code>
               <span className="text-[var(--color-text-muted)]">Short one-liner, max 200 characters</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">longDescription</code>
               <span className="text-[var(--color-text-muted)]">Full description with Markdown support, max 10,000 characters</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">category</code>
               <span className="text-[var(--color-text-muted)]">wallet | app | dashboard | tool | library | other</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">repo</code>
               <span className="text-[var(--color-text-muted)]">GitHub repository URL</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">liveUrl</code>
               <span className="text-[var(--color-text-muted)]">Website URL (optional)</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">verusFeatures</code>
               <span className="text-[var(--color-text-muted)]">List of Verus features used (see below)</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">images</code>
               <span className="text-[var(--color-text-muted)]">Auto-detected from public/images/projects/your-slug/ (optional)</span>
             </div>
-            <div className="grid grid-cols-[120px_1fr] gap-2">
+            <div className="grid grid-cols-[140px_1fr] sm:grid-cols-[160px_1fr] gap-4">
               <code className="text-[var(--color-text-primary)]">maintainer</code>
               <span className="text-[var(--color-text-muted)]">Your GitHub username, max 100 characters</span>
             </div>
