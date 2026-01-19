@@ -2,9 +2,6 @@
  * Project data loading utilities
  * Reads YAML files from /data/projects/ and merges with GitHub data
  * 
- * Updated: Unified image structure at public/images/projects/{slug}/
- * All assets (logo, screenshots, featured) auto-detected from single folder.
- * 
  * Security: Added slug validation to prevent path traversal attacks.
  * Security: Added Zod schema validation for YAML content.
  * Security: Added URL validation for external links.
@@ -47,7 +44,7 @@ function validateSlug(slug: string): string | null {
   }
   
   // Limit length to prevent abuse
-  if (normalized.length > 100) {
+  if (normalized.length > 50) {
     return null;
   }
   

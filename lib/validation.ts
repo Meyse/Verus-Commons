@@ -154,12 +154,12 @@ export const ProjectYAMLSchema = z.object({
   name: z
     .string()
     .min(1, 'Name is required')
-    .max(100, 'Name must be 100 characters or less'),
+    .max(60, 'Name must be 60 characters or less'),
   
   slug: z
     .string()
     .min(1, 'Slug is required')
-    .max(100, 'Slug must be 100 characters or less')
+    .max(50, 'Slug must be 50 characters or less')
     .regex(slugPattern, 'Slug must be lowercase alphanumeric with hyphens'),
   
   description: z
@@ -197,7 +197,7 @@ export const ProjectYAMLSchema = z.object({
   
   screenshots: z
     .array(z.string().max(100, 'Screenshot filename must be 100 characters or less'))
-    .max(10, 'Maximum 10 screenshots allowed')
+    .max(6, 'Maximum 6 screenshots allowed')
     .optional(),
 });
 

@@ -6,17 +6,18 @@
 # REQUIRED FIELDS
 # ============================================================================
 
-# Display name of your project
+# Display name of your project (max 60 characters)
 name: "Your Project Name"
 
-# URL-friendly identifier (lowercase, hyphens only, must match filename)
+# URL-friendly identifier (lowercase, hyphens only, must match filename, max 50 characters)
 slug: "your-project-slug"
 
-# Short one-liner describing your project (max 100 characters)
+# Short one-liner describing your project (max 200 characters)
 description: "A brief description of what your project does"
 
-# Full description with Markdown support
+# Full description with Markdown support (max 10,000 characters)
 # Use this to explain features, usage, and how your project integrates with Verus
+# Note: Projects exceeding the character limit will not appear on the site
 longDescription: |
   A more detailed description of your project goes here.
   
@@ -54,7 +55,7 @@ verusFeatures:
 # Documentation URL (if different from repo README)
 # docsUrl: "https://docs.your-project.com"
 
-# GitHub username/organization (defaults to repo owner if not specified)
+# GitHub username/organization (max 100 characters, defaults to repo owner if not specified)
 # maintainer: "your-github-username"
 
 # ============================================================================

@@ -2,7 +2,8 @@
  * Add Project page
  * Instructions for submitting a project via pull request, theme-aware
  * 
- * Updated: Now references the _template.yaml file directly in the repo
+ * Updated: Added character limits for all fields to match validation schema.
+ * Fixed description limit (was 100, should be 200). Screenshots max is 6.
  */
 
 'use client';
@@ -123,19 +124,19 @@ export default function AddPage() {
           <div className="space-y-3 text-sm">
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">name</code>
-              <span className="text-[var(--color-text-muted)]">Display name of your project</span>
+              <span className="text-[var(--color-text-muted)]">Display name of your project, max 60 characters</span>
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">slug</code>
-              <span className="text-[var(--color-text-muted)]">URL-friendly identifier (lowercase, hyphens only)</span>
+              <span className="text-[var(--color-text-muted)]">URL-friendly identifier (lowercase, hyphens only), max 50 characters</span>
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">description</code>
-              <span className="text-[var(--color-text-muted)]">Short one-liner, max 100 characters</span>
+              <span className="text-[var(--color-text-muted)]">Short one-liner, max 200 characters</span>
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">longDescription</code>
-              <span className="text-[var(--color-text-muted)]">Full description with Markdown support</span>
+              <span className="text-[var(--color-text-muted)]">Full description with Markdown support, max 10,000 characters</span>
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">category</code>
@@ -159,7 +160,7 @@ export default function AddPage() {
             </div>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <code className="text-[var(--color-text-primary)]">maintainer</code>
-              <span className="text-[var(--color-text-muted)]">Your GitHub username</span>
+              <span className="text-[var(--color-text-muted)]">Your GitHub username, max 100 characters</span>
             </div>
           </div>
         </section>
