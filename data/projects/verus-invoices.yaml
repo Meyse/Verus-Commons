@@ -1,0 +1,26 @@
+# verus-invoices.yaml
+# Created: YAML file for the Verus Invoices project
+
+name: "Verus Invoices"
+slug: "verus-invoices"
+description: "Web application for creating Verus payment invoices"
+longDescription: |
+  Verus Invoices is a web-based tool that allows users to create payment invoices for the Verus ecosystem. Built with Next.js and TypeScript, this application provides a simple interface for generating Verus-compatible payment requests.
+
+  ## Features
+
+  - Create payment invoices with customizable amounts and currencies
+  - Convert between different invoice formats
+  - Clean, modern user interface
+  - Completely open source
+
+  ## About
+
+  This project was completely generated with AI using Cursor and Claude Sonnet 3.5, demonstrating the potential of AI-assisted development in the Verus ecosystem.
+
+category: "app"
+repo: "https://github.com/Meyse/convert-invoices-main"
+liveUrl: "https://verusinvoices.com"
+verusFeatures:
+  - VerusID
+  - Currencies
